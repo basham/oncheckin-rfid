@@ -2,7 +2,7 @@
 <head>
 	<title>Prototype</title>
 <script src="/socket.io/socket.io.js"></script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/jquery-1.5.min.js"></script>
 <script> 
 	var socket = new io.Socket('localhost', { port: 3000 }); 
 	socket.connect();
@@ -33,6 +33,53 @@
 		});
 	
 	});
+	
+	var latesthash = '20110219';
+	
+	function Hasher(obj) {
+		this.firstname = obj.firstname;
+		this.lastname = obj.lastname;
+		this.hashname = obj.hashname;
+		this.rfid = obj.rfid;
+		this.hashes = obj.hashes;
+		this.hares = obj.hares;
+		this.lasthash = obj.lasthash;
+
+		this.name = function() {
+			return this.hashname ? this.hashname : 'Just ' + this.firstname;
+		};
+		this.isAnniversary = function() {
+			return ( this.hashes % 5 == 0 && this.hashes > 0 ) || this.hashes == 69;
+		};
+		this.isNaming = function() {
+			return this.hashes > 0 && this.hashname.length == 0;
+		};
+		this.isReturner = function() {
+			return this.lasthash < latesthash;
+		}
+		this.isVirgin = function() {
+			return this.hashes == 0;
+		}
+	}
+	
+	var upp = new Hasher({
+		firstname: 'Chris',
+		lastname: 'Basham',
+		hashname: 'Untouched Private Panther',
+		rfid: '3D002123221D',
+		hashes: 15,
+		hares: 1,
+		lasthash: '20110219' });
+	
+	var rob = new Hasher({
+		firstname: 'Rob',
+		lastname: 'Begley',
+		hashname: '',
+		rfid: '31007E195503',
+		hashes: 9,
+		hares: 0,
+		lasthash: '20101211' });
+		
 	/*
 	      function message(obj){
         var el = document.createElement('p');
@@ -67,15 +114,83 @@
 
 </script> 
 
+<style type="text/css">
+
+@import '/css/reset.css';
+
+body {
+	overflow-x: hidden;
+	background: #CCC;
+	font-family: 'Helvetica Neue', Helvetica, sans-serif; }
+
+#nav {
+	position: fixed;
+	width: 280px;
+	height: 100%;
+	background: #DDDDDD; }
+
+#body {
+	position: absolute;
+	left: 280px;
+	height: 100%; }
+
+h1 {
+	padding: 20px;
+	font-size: 24px;
+	font-weight: 200; }
+
+nav {
+	padding: 20px; }
+
+nav li {
+	font-size: 24px;
+	padding: 10px 0; }
+
+nav li span {
+	font-weight: bold; }
+
+#console {
+	padding: 20px; }
+
+#console li {
+	font-weight: 200;
+	font-size: 48px; }
+	
+#console li:first-child {
+	font-size: 96px; }
+
+
+
+</style>
+
 </head>
 
 <body>
+
+<section id="nav">
+
+<h1 id="hash-title" class="bind">Hash of the Titans</h1>
+
+<nav>
+	<ul>
+		<li><span>4</span> Anniversaries</li>
+		<li><span>1</span> Late sign-in</li>
+		<li><span>2</span> Namings</li>
+		<li><span>8</span> Returners</li>
+		<li><span>0</span> Visitors</li>
+		<li><span>5</span> Virgins</li>
+	</ul>
+</nav>
 	
-<h1>Messages</h1>
+</section>
+
+<section id="body">
 
 <ol id="console"></ol>
 
 <p><button id="btn">Clear</button></p>
+
+</section>
 
 </body>
 </html>

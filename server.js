@@ -2,14 +2,17 @@
 var sys = require('sys');
 var fs = require('fs');
 
-var rfid = {
+function RFID(serial) {
+	
+	this.serial = serial;
 	
 	// Temporarily stores the RFID id as it reconstructs from the stream.
-	_id: '',
+	this._id = '';
 	
-	ids: [],
+	this.ids = [];
 	
-	read: function(serial) {
+	this.read = function(serial) {
+		this.serial = serial;
 		// Simplifies restruction of stream if one bit comes at a time.
 		fs.createReadStream(serial, { bufferSize: 1 })
 		
@@ -22,19 +25,21 @@ var rfid = {
 		})
 
 		.on('close', function() {
+			//this.read(this.serial);
 			sys.puts('Closing stream.');
 		})
 
 		.on('error', function(error) {
+			//this.read(this.serial);
 			sys.debug(error);
 		})
 		
 		.on('data', function(chunk) {
 			rfid.reconstruct(chunk);
 		});
-	},
+	};
 	
-	reconstruct: function(chunk) {
+	this.reconstruct = function(chunk) {
 		chunk = chunk.toString('ascii').match(/\w*/)[0]; // Only keep hex chars
 		if ( chunk == '' ) { // Found non-hex char
 			if ( this._id != '' ) { // The ID isn't blank
@@ -46,12 +51,12 @@ var rfid = {
 			return;
 		}
 		this._id += chunk; // Concat hex chars to the forming ID
-	},
+	};
 
-	send: function(id) {
+	this.send = function(id) {
 		sys.puts(id);
-	}
-};
+	};
+}
 
 
 var db = [];
@@ -61,6 +66,7 @@ db['31007E05450F'] = 'Alex';
 db['2800F78784DC'] = 'UPP';
 db['3D0021673F44'] = 'Faux Cock';
 
+var rfid = new RFID();
 rfid.read('/dev/cu.usbserial-A600exqM');
 
 rfid.send = function(id) {
