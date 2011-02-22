@@ -1,6 +1,6 @@
-
 var sys = require('sys');
 var fs = require('fs');
+var $ = require('jquery'); 
 
 function RFID(serial) {
 	
@@ -58,6 +58,9 @@ function RFID(serial) {
 	};
 }
 
+
+
+
 var hash = {
 	title: 'Rehash of the Titans',
 	attendees: [ 1, 2 ],
@@ -69,7 +72,7 @@ var hash = {
 		}
 	]
 };
-
+/*
 var hashers = [
 	{
 		id: 1,
@@ -90,29 +93,55 @@ var hashers = [
 		hares: 0,
 		lasthash: '20101211' }
 ];
+*/
 
 function getHasher(rfid) {
-	for( hasher in hashers ) {
-		if ( hasher.rfid == rfid )
-			return hasher;
+	for( var i = 0; i < hashers.length; i++ ) {
+		if ( hashers[i].id == rfids[rfid] )
+			return hashers[i];
 	}
 	return null;
 }
 
-
+/*
 var db = [];
 db['2800F7D85D5A'] = 'Chris';
 db['3D00215B3671'] = 'Nick';
 db['31007E05450F'] = 'Alex';
 db['2800F78784DC'] = 'UPP';
 db['3D0021673F44'] = 'Faux Cock';
+*/
+var rfids = {};
+
+fs.readFile('data/rfids.json', function (err, data) {
+	if (err) throw err;
+	rfids = JSON.parse(data);
+});
+
+
+var hashers = {};
+
+fs.readFile('data/roster.json', function (err, data) {
+	if (err) throw err;
+	hashers = JSON.parse(data);
+		//sys.puts(hashers);
+});
+
 
 var rfid = new RFID();
 rfid.read('/dev/cu.usbserial-A600exqM');
 
 rfid.send = function(id) {
-	sys.puts(id);
-	socket.broadcast({ data: [this.find(id)] });
+	//sys.puts(this.find(id));
+	var h = getHasher(id);
+	if( !h ) {
+		sys.puts('Assign tag: ' + id);
+		socket.broadcast({ type: 'assign', data: id });
+		return;
+	}
+	sys.puts('Checking in: ' + h.hashname);
+	socket.broadcast({ type: 'checkin', data: h });
+	//socket.broadcast({ data: [this.find(id)] });
 }
 
 rfid.sendAll = function() {
@@ -124,8 +153,10 @@ rfid.sendAll = function() {
 }
 
 rfid.find = function(id) {
-	return db[id] ? db[id] : id;
+	return rfids[id] ? rfids[id] : null;
 }
+
+
 
 
 var express = require('express');

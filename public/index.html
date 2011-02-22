@@ -10,9 +10,21 @@
 	socket.on('message', function(obj) {
 		if ( 'message' in obj )
 			message(obj.message);
+		/*
 		if ( 'data' in obj ) {
 			for (var d in obj.data)
 				data( obj.data[d] );
+		}
+		*/
+		if( 'type' in obj ) {
+			switch( obj.type ) {
+				case 'assign':
+					message('Assign: ' + obj.data);
+					break;
+				case 'checkin':
+					checkin(obj.data);
+					break;
+			}
 		}
 	});
 	socket.on('disconnect', function(){ });
@@ -23,6 +35,11 @@
 	
 	function data(d) {
 		$('#console').prepend('<li>' + d + '</li>');
+	}
+	
+	function checkin(hasher) {
+		hasher = new Hasher(hasher);
+		$('#console').prepend('<li>' + hasher.name() + '</li>');
 	}
 	
 	$(document).ready(function() {
@@ -37,13 +54,14 @@
 	var latesthash = '20110219';
 	
 	function Hasher(obj) {
-		this.firstname = obj.firstname;
-		this.lastname = obj.lastname;
-		this.hashname = obj.hashname;
-		this.rfid = obj.rfid;
-		this.hashes = obj.hashes;
-		this.hares = obj.hares;
-		this.lasthash = obj.lasthash;
+		this.id = obj.id;
+		this.firstname = obj.firstname || '';
+		this.lastname = obj.lastname || '';
+		this.hashname = obj.hashname || '';
+		this.rfid = obj.rfid || '';
+		this.hashes = obj.hashes || 0;
+		this.hares = obj.hares || 0;
+		this.lasthash = obj.lasthash || latesthash;
 
 		this.name = function() {
 			return this.hashname ? this.hashname : 'Just ' + this.firstname;
@@ -62,6 +80,7 @@
 		}
 	}
 	
+	/*
 	var upp = new Hasher({
 		firstname: 'Chris',
 		lastname: 'Basham',
@@ -79,7 +98,7 @@
 		hashes: 9,
 		hares: 0,
 		lasthash: '20101211' });
-		
+		*/
 	/*
 	      function message(obj){
         var el = document.createElement('p');
@@ -154,10 +173,10 @@ nav li span {
 
 #console li {
 	font-weight: 200;
-	font-size: 48px; }
+	font-size: 200%; }
 	
 #console li:first-child {
-	font-size: 96px; }
+	font-size: 400%; }
 
 
 
