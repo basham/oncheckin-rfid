@@ -41,7 +41,7 @@
 	function checkin(hasher) {
 		hasher = new Hasher(hasher);
 		var msg = '';
-		msg += '<strong>' + hasher.name() + '</strong>';
+		msg += '<strong>' + hasher.hashname + '</strong>';
 		msg += hasher.isAnniversary() ? '<p>You\'re celebrating your <mark>' + hasher.hashes + ' hash</mark>.</p>' : '<p>Today is your <mark>' + hasher.hashes + ' hash</mark>.</p>';
 		msg += hasher.isReturner() ? '<p>You haven\'t come since <mark>' + hasher.lasthash + '</mark>.</p>' : '';
 		msg += hasher.isNaming() ? '<p>Today is your <mark>naming</mark>.</p>' : '';
@@ -63,15 +63,12 @@
 		this.id = obj.id;
 		this.firstname = obj.firstname || '';
 		this.lastname = obj.lastname || '';
-		this.hashname = obj.hashname || '';
+		this.hashname = obj.hashname ? obj.hashname : 'Just ' + this.firstname;
 		this.rfid = obj.rfid || '';
 		this.hashes = parseInt(obj.hashes) || 0;
 		this.hares = parseInt(obj.hares) || 0;
 		this.lasthash = obj.lasthash || latesthash;
 
-		this.name = function() {
-			return this.hashname ? this.hashname : 'Just ' + this.firstname;
-		};
 		this.isAnniversary = function() {
 			return ( this.hashes % 5 == 0 && this.hashes > 0 ) || this.hashes == 69;
 		};

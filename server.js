@@ -139,7 +139,7 @@ rfid.send = function(id) {
 		socket.broadcast({ type: 'assign', data: id });
 		return;
 	}
-	sys.puts('Checking in: ' + h.hashname);
+	sys.puts('Checking in: ' + ( h.hashname ? h.hashname : 'Just ' + h.firstname ));
 	socket.broadcast({ type: 'checkin', data: h });
 	//socket.broadcast({ data: [this.find(id)] });
 }
