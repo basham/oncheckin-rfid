@@ -121,6 +121,8 @@
 			if( $('.auto .selected').length ) {
 				console.log( $('.auto .selected').attr('id') );
 			}
+			else
+				$('form').submit();
 		}
 		
 		$('form').submit(function() {
@@ -285,15 +287,17 @@ nav li span {
 
 .module {
 	position: absolute;
-	width: 360px;
+	width: 400px;
 	right: 292px;
 	margin: 0 auto;
 	z-index: 200;
-	border-radius: 0 0 0 10px;
-	background: #F9F9F9;
-	padding: 20px 30px;
 	text-shadow: #FFFFFF 0 1px 0; }
 
+.form {
+	background: #F9F9F9;
+	padding: 20px 30px 10px;
+	margin-bottom: 1px; }
+	
 .module hgroup {
 	padding-bottom: 20px;
 	margin-bottom: 20px;
@@ -344,7 +348,7 @@ button:active {
 input {
 	display: block;
 	font-size: 20px;
-	width: 338px;
+	width: 318px;
     padding: 10px;
     border: 1px solid rgba(0, 0, 0, .2);
     border-radius: 5px; }
@@ -369,34 +373,34 @@ form p {
 	float: left; }
 
 .grid-2 p input {
-	width: 150px; }
+	width: 140px; }
 
 
 
 .auto {
-	position: fixed;
-	width: 291px;
 	height: 100%;
 	right: 0;
 	z-index: 150; }
 
 .auto span {
-	display: block;
+
 	font-size: 18px;
 	color: #000; }
 
 .auto li {
-	line-height: 1.2;
+	font-size: 14px;
+	line-height: 18px;
 	color: rgba(0, 0, 0, .5);
-	padding: 10px 20px;
+	padding: 10px 30px;
 	background: rgba(255, 255, 255, .8); 
-	margin-bottom: 1px; }
+	border-bottom: 1px solid rgba(0, 0, 0, .1); }
 
 .auto li.selected {
 	background: rgba(255, 255, 255, .2); }
 
 .auto li.selected, .auto li.selected span {
-	color: #FFF; }
+	color: #FFFFFF;
+	text-shadow: #000000 0 1px 0; }
 	
 </style>
 
@@ -407,6 +411,7 @@ form p {
 <div id="overlay"></div>
 
 <section id="assign" class="module">
+<section class="form">
 	<hgroup>
 		<a class="close" href="#">x</a>
 		<h2>Assign tag <span id="rfid">31007E05450F</span></h2>
@@ -417,17 +422,19 @@ form p {
 			<p><label><input id="lastname" placeholder="Last name"/></label></p>
 		</div>
 		<p><label><input id="hashname" placeholder="Hash name" class="default"/></label></p>
-		<button id="assignbtn">Assign</button>
 	</form>
 </section>
-
-<section id="autoassign" class="auto">
+<section class="auto">
 	<ul>
 		<li id="55a7d7166c840b6cd05cf03e055462b90cba7015"><span>White Lightning</span> John Branigan</li>
 		<li><span>Untouched Private Panther</span> Chris Basham</li>
 		<li><span>Titty Symbol</span> Rebecca Petrush</li>
 		<li><span>Just Rob</span> Rob Begley</li>
+		<li><span>Faux Cock</span> John Wayne Hill</li>
+		<li><span>Plate Dicktonics</span> Dick Tracey</li>
+		<li><span>Just Chris</span> Chris Basgier</li>
 	</ul>
+</section>
 </section>
 
 <section id="nav">
