@@ -9,6 +9,9 @@ require('hash');
 var n = 0;
 var a = 0;
 var hashers = [];
+var longestname = '';
+var nameavg = 0;
+var named = 0;
 
 var reader = csv.createCsvFileReader('data/roster-20110211.csv');
 reader.setColumnNames([ 'initials','name','hashname','address','phone','hashes','lasthash','hares' ]);
@@ -20,6 +23,11 @@ reader
 		data.lastname = $.trim(name[1]);
 		data.firstname = $.trim(name[2]);
 		data.hashname = data.hashname.match(/Just .*/) ? '' : data.hashname;
+		
+		named += data.hashname.length > 0 ? 1 : 0;
+		longestname = data.hashname.length > longestname.length ? data.hashname : longestname;
+		nameavg += data.hashname.length;
+		
 		data.id = Hash.sha1((data.lastname + data.firstname).toLowerCase());
 		hashers.push( new Hasher(data) );
 	}
@@ -44,6 +52,8 @@ fs.writeFile('data/roster.json', JSON.stringify(hashers), function (err) {
 	sys.puts('TOTAL: ' + hashers.length);
 	sys.puts('ANNIVERSARIES: ' + a);
 	sys.puts('NAMINGS: ' + n);
+	sys.puts('LONGEST NAME: ' + longestname.length + ' | ' + longestname);
+	sys.puts('NAME LENGTH AVG: ' + ( nameavg / named ));
 	//sys.puts(JSON.stringify(rfids));
 	saveRFIDs();
 });

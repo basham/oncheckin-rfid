@@ -54,7 +54,29 @@
 			message('Clearing');
 			socket.send({ action: 'clear' });
 		});
-	
+		
+		$('#firstname').keyup(function() {
+			if( !$('#hashname').hasClass('default') )
+				return;
+			$('#hashname').val( defaultHashname() );
+		});
+
+		$('#hashname').keyup(function() {
+			if( $(this).val() == defaultHashname() )
+				$(this).addClass('default');
+			else
+				$(this).removeClass('default');
+		});
+
+		$('#hashname').blur(function() {
+			if( $(this).val().length == 0 )
+				$(this).addClass('default').val( defaultHashname() );
+		});
+		
+		function defaultHashname() {
+			return $('#firstname').val().length > 0 ? 'Just ' + $('#firstname').val() : ''
+		}
+		
 	});
 	
 	var latesthash = '20110219';
@@ -198,14 +220,132 @@ nav li span {
 #console li:first-child p {
 	display: block; }
 
+#overlay {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, .8);
+	z-index: 100; }
+
+.module {
+	position: absolute;
+	width: 360px;
+	left: 312px;
+	z-index: 200;
+	border-radius: 0 0 10px 10px;
+	background: white;
+	padding: 20px 30px; }
+
+.module hgroup {
+	padding: 0 0 20px;
+	border-bottom: 1px solid rgba(0, 0, 0, .2); }
+
+.module hgroup h2 {
+	color: rgba(0, 0, 0, .5);
+	font-weight: 200;
+	font-size: 24px; }
+
+.module hgroup h2 span {
+	font-size: 85%;
+	padding-left: 5px;
+	color: rgba(0, 0, 0, .2); }
+
+.close {
+	float: right;
+	color: rgba(0, 0, 0, .2);
+	background: rgba(0, 0, 0, .1);
+	padding: 0 10px;
+	border-radius: 5px;
+	line-height: 26px;
+	height: 32px;
+	font-weight: bold;
+	text-decoration: none;
+	font-size: 24px; }
+
+.close:hover {
+	color: white;
+	background: rgba(0, 0, 0, .2); }
+
+.module form {
+	padding: 20px 0 0;
+	background: rgba(255, 255, 255, .8); }
+
+button {
+	font-size: 16px;
+    padding: .5em 1em;
+    background-color: rgba(0, 0, 0, .1);
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 5px;
+    text-shadow: rgba(0, 0, 0, .1) 0 -1px 0;
+    background: -webkit-gradient(linear, 0 0, 0 100%, from(#FFFFFF), to(#E5E5E5)); }
+
+button:hover {
+    border-color: rgba(50, 120, 224, .5);
+    background: -webkit-gradient(linear, 0 0, 0 100%, from(#FFFFFF), to(#eaf1fc)); }
+
+button:active {
+    background: -webkit-gradient(linear, 0 0, 0 100%, from(#eaf1fc), to(#FFFFFF)); }
 
 
+.module input {
+	display: block;
+	font-size: 20px;
+	width: 342px;
+    padding: .5em;
+    background-color: rgba(0, 0, 0, .1);
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 5px;
+    text-shadow: rgba(0, 0, 0, .1) 0 -1px 0;
+    background: rgba(0, 0, 0, .025); }
+
+input.default {
+	color: rgba(0, 0, 0, .5);
+}
+
+label {
+	text-transform: uppercase;
+	color: rgba(0, 0, 0, .4);
+	font-size: 12px;
+}
+
+form p {
+	clear: both;
+	padding: 0 0 10px; }
+
+.grid-2 p {
+	clear: none;
+	float: right; }
+
+.grid-2 p:first-child {
+	float: left; }
+
+
+.grid-2 p input {
+	width: 150px; }
 
 </style>
 
 </head>
 
 <body>
+
+<div id="overlay"></div>
+
+<section id="assign" class="module">
+	<head>
+	<hgroup>
+		<a class="close" href="#">x</a>
+		<h2>Assign tag <span>31007E05450F</span></h2>
+	</hgroup>
+	<form>
+		<div class="grid-2">
+			<p><label>First name <input id="firstname"/></label></p>
+			<p><label>Last name <input id="lastname"/></label></p>
+		</div>
+		<p><label>Hash name <input id="hashname" class="default"/></label></p>
+		<button>Assign</button>
+	</form>
+</section>
 
 <section id="nav">
 
