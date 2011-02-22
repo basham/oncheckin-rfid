@@ -55,6 +55,8 @@
 			socket.send({ action: 'clear' });
 		});
 		
+		//$('#kennel').val('Blooming Fools');
+		
 		$('#firstname').keyup(function() {
 			if( !$('#hashname').hasClass('default') )
 				return;
@@ -76,6 +78,60 @@
 		function defaultHashname() {
 			return $('#firstname').val().length > 0 ? 'Just ' + $('#firstname').val() : ''
 		}
+		
+		$(this).keyup(function(event) {
+			switch( event.keyCode ) {
+				case 38: // Up arrow
+					$('form input').blur().addClass('disabled');
+					if( $('.auto .selected').length ) {
+						$('.auto .selected').removeClass('selected').prev().addClass('selected');
+						if( !$('.auto .selected').length ) {
+							$('form input.focused').focus();
+							$('form input').removeClass('disabled');
+						}
+					}
+					else
+						$('.auto li').last().addClass('selected');
+					break;
+				case 40: // Down arrow
+					$('form input').blur().addClass('disabled');
+					if( $('.auto .selected').length ) {
+						$('.auto .selected').removeClass('selected').next().addClass('selected');
+						if( !$('.auto .selected').length ) {
+							$('form input.focused').focus();
+							$('form input').removeClass('disabled');
+						}
+					}
+					else
+						$('.auto li').first().addClass('selected');
+					break;
+				case 13: // Return
+					autoAssign();
+					break;
+			}
+		});
+		
+		$('form input').focus(function() {
+			$('form input').removeClass('focused disabled');
+			$(this).addClass('focused');
+			$('.auto .selected').removeClass('selected');
+		});
+		
+		function autoAssign() {
+			if( $('.auto .selected').length ) {
+				console.log( $('.auto .selected').attr('id') );
+			}
+		}
+		
+		$('form').submit(function() {
+			var h = {
+				rfid: $('#rfid').text(),
+				firstname: $('#firstname').val(),
+				lastname: $('#lastname').val(),
+				hashname: $('#hashname').hasClass('default') ? '' : $('#hashname').val() };
+			console.log( h );
+			return false;
+		});
 		
 	});
 	
@@ -230,14 +286,17 @@ nav li span {
 .module {
 	position: absolute;
 	width: 360px;
-	left: 312px;
+	right: 292px;
+	margin: 0 auto;
 	z-index: 200;
-	border-radius: 0 0 10px 10px;
-	background: white;
-	padding: 20px 30px; }
+	border-radius: 0 0 0 10px;
+	background: #F9F9F9;
+	padding: 20px 30px;
+	text-shadow: #FFFFFF 0 1px 0; }
 
 .module hgroup {
-	padding: 0 0 20px;
+	padding-bottom: 20px;
+	margin-bottom: 20px;
 	border-bottom: 1px solid rgba(0, 0, 0, .2); }
 
 .module hgroup h2 {
@@ -253,7 +312,7 @@ nav li span {
 .close {
 	float: right;
 	color: rgba(0, 0, 0, .2);
-	background: rgba(0, 0, 0, .1);
+	background: rgba(0, 0, 0, .05);
 	padding: 0 10px;
 	border-radius: 5px;
 	line-height: 26px;
@@ -264,11 +323,7 @@ nav li span {
 
 .close:hover {
 	color: white;
-	background: rgba(0, 0, 0, .2); }
-
-.module form {
-	padding: 20px 0 0;
-	background: rgba(255, 255, 255, .8); }
+	background: rgba(0, 0, 0, .1); }
 
 button {
 	font-size: 16px;
@@ -286,27 +341,21 @@ button:hover {
 button:active {
     background: -webkit-gradient(linear, 0 0, 0 100%, from(#eaf1fc), to(#FFFFFF)); }
 
-
-.module input {
+input {
 	display: block;
 	font-size: 20px;
-	width: 342px;
-    padding: .5em;
-    background-color: rgba(0, 0, 0, .1);
+	width: 338px;
+    padding: 10px;
     border: 1px solid rgba(0, 0, 0, .2);
-    border-radius: 5px;
-    text-shadow: rgba(0, 0, 0, .1) 0 -1px 0;
-    background: rgba(0, 0, 0, .025); }
+    border-radius: 5px; }
 
-input.default {
-	color: rgba(0, 0, 0, .5);
-}
+input.disabled {
+	opacity: .25; }
 
 label {
-	text-transform: uppercase;
-	color: rgba(0, 0, 0, .4);
 	font-size: 12px;
-}
+	color: rgba(0, 0, 0, .4);
+	text-transform: uppercase; }
 
 form p {
 	clear: both;
@@ -319,10 +368,36 @@ form p {
 .grid-2 p:first-child {
 	float: left; }
 
-
 .grid-2 p input {
 	width: 150px; }
 
+
+
+.auto {
+	position: fixed;
+	width: 291px;
+	height: 100%;
+	right: 0;
+	z-index: 150; }
+
+.auto span {
+	display: block;
+	font-size: 18px;
+	color: #000; }
+
+.auto li {
+	line-height: 1.2;
+	color: rgba(0, 0, 0, .5);
+	padding: 10px 20px;
+	background: rgba(255, 255, 255, .8); 
+	margin-bottom: 1px; }
+
+.auto li.selected {
+	background: rgba(255, 255, 255, .2); }
+
+.auto li.selected, .auto li.selected span {
+	color: #FFF; }
+	
 </style>
 
 </head>
@@ -332,19 +407,27 @@ form p {
 <div id="overlay"></div>
 
 <section id="assign" class="module">
-	<head>
 	<hgroup>
 		<a class="close" href="#">x</a>
-		<h2>Assign tag <span>31007E05450F</span></h2>
+		<h2>Assign tag <span id="rfid">31007E05450F</span></h2>
 	</hgroup>
-	<form>
+	<form id="newhasher" autocomplete="off">
 		<div class="grid-2">
-			<p><label>First name <input id="firstname"/></label></p>
-			<p><label>Last name <input id="lastname"/></label></p>
+			<p><label><input id="firstname" placeholder="First name"/></label></p>
+			<p><label><input id="lastname" placeholder="Last name"/></label></p>
 		</div>
-		<p><label>Hash name <input id="hashname" class="default"/></label></p>
-		<button>Assign</button>
+		<p><label><input id="hashname" placeholder="Hash name" class="default"/></label></p>
+		<button id="assignbtn">Assign</button>
 	</form>
+</section>
+
+<section id="autoassign" class="auto">
+	<ul>
+		<li id="55a7d7166c840b6cd05cf03e055462b90cba7015"><span>White Lightning</span> John Branigan</li>
+		<li><span>Untouched Private Panther</span> Chris Basham</li>
+		<li><span>Titty Symbol</span> Rebecca Petrush</li>
+		<li><span>Just Rob</span> Rob Begley</li>
+	</ul>
 </section>
 
 <section id="nav">
