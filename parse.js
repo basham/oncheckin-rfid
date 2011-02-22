@@ -19,6 +19,7 @@ reader
 		var name = data.name.match(/(.*),(.*)/);
 		data.lastname = $.trim(name[1]);
 		data.firstname = $.trim(name[2]);
+		data.hashname = data.hashname.match(/Just .*/) ? '' : data.hashname;
 		data.id = Hash.sha1((data.lastname + data.firstname).toLowerCase());
 		hashers.push( new Hasher(data) );
 	}
