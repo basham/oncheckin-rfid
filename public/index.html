@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<title>Prototype</title>
@@ -39,7 +40,12 @@
 	
 	function checkin(hasher) {
 		hasher = new Hasher(hasher);
-		$('#console').prepend('<li>' + hasher.name() + '</li>');
+		var msg = '';
+		msg += '<strong>' + hasher.name() + '</strong>';
+		msg += !hasher.isAnniversary() ? '<p>You\'re celebrating your <mark>' + hasher.hashes + ' hash</mark>.</p>' : '';
+		msg += hasher.isReturner() ? '<p>You haven\'t come since <mark>' + hasher.lasthash + '</mark>.</p>' : '';
+		msg += hasher.isNaming() ? '<p>Today is your naming.</p>' : '';
+		$('#console').prepend('<li>' + msg + '</li>');
 	}
 	
 	$(document).ready(function() {
@@ -172,11 +178,29 @@ nav li span {
 	padding: 20px; }
 
 #console li {
+	opacity: .25;
 	font-weight: 200;
 	font-size: 200%; }
+
+#console li p {
+	color: rgba(0, 0, 0, .5);
+	display: none; }
+
+#console li mark {
+	color: rgba(0, 0, 0, 1);
+	background: none; }
 	
 #console li:first-child {
-	font-size: 400%; }
+	opacity: 1;
+	margin-bottom: 20px; }
+	
+#console li:first-child strong {
+	font-size: 200%;
+	font-weight: 200; }
+
+#console li:first-child p {
+	display: block; }
+
 
 
 
