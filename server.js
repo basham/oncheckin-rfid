@@ -58,6 +58,47 @@ function RFID(serial) {
 	};
 }
 
+var hash = {
+	title: 'Rehash of the Titans',
+	attendees: [ 1, 2 ],
+	checkins: [
+		{
+			id: 1,
+			type: 'signin', // signin|beercheck|onin|onafter
+			checkedin: [ 1 ]
+		}
+	]
+};
+
+var hashers = [
+	{
+		id: 1,
+		firstname: 'Chris',
+		lastname: 'Basham',
+		hashname: 'Untouched Private Panther',
+		rfid: '3D002123221D',
+		hashes: 15,
+		hares: 1,
+		lasthash: '20110219' },
+	{
+		id: 2,
+		firstname: 'Rob',
+		lastname: 'Begley',
+		hashname: '',
+		rfid: '31007E195503',
+		hashes: 9,
+		hares: 0,
+		lasthash: '20101211' }
+];
+
+function getHasher(rfid) {
+	for( hasher in hashers ) {
+		if ( hasher.rfid == rfid )
+			return hasher;
+	}
+	return null;
+}
+
 
 var db = [];
 db['2800F7D85D5A'] = 'Chris';
