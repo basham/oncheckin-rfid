@@ -179,7 +179,7 @@
 		function closeModal() {
 			$('#overlay:visible').hide('fade', {}, 250);
 			$('#assign:visible').hide('slide', { direction:'up' }, 250, function() {
-				$('form input').val('');
+				$('form input').val('').removeClass('disabled');
 				$('.auto ul').empty();
 			});
 		}
