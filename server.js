@@ -124,7 +124,6 @@ var hashers = {};
 fs.readFile('data/roster.json', function (err, data) {
 	if (err) throw err;
 	hashers = JSON.parse(data);
-		//sys.puts(hashers);
 });
 
 
@@ -158,6 +157,21 @@ rfid.find = function(id) {
 
 
 
+function autocompleteHasher(data, limit) {
+	var auto = [];
+	if( data.firstname.length == 0 && data.lastname.length == 0 && data.hashname.length == 0 )
+		return auto;
+	for( var i = 0; i < hashers.length && auto.length < limit; i++ ) {
+		var h = hashers[i];
+		if ( h.firstname.match(new RegExp(data.firstname, 'gi'))
+			&& h.lastname.match(new RegExp(data.lastname, 'gi'))
+			&& h.hashname.match(new RegExp(data.hashname, 'gi')) )
+			auto.push(h);
+	}
+	return auto;
+}
+
+
 
 var express = require('express');
 var app = express.createServer(); 
@@ -184,13 +198,14 @@ socket.on('connection', function(client){
 	rfid.sendAll();
 	
 	client.on('message', function(message) {
+		sys.puts( 'ACTION: ' + message.action );
 		switch( message.action ) {
 			case 'clear':
 				rfid.ids = [];
 				rfid.sendAll();
 				break;
-			case 'newId':
-				
+			case 'autoHasher':
+				socket.broadcast({ action: 'autoHasher', data: autocompleteHasher(message.data, message.limit) });
 				break;
 		}
 	})

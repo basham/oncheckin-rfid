@@ -18,13 +18,16 @@
 				data( obj.data[d] );
 		}
 		*/
-		if( 'type' in obj ) {
-			switch( obj.type ) {
+		if( 'action' in obj ) {
+			switch( obj.action ) {
 				case 'assign':
 					message('Assign: ' + obj.data);
 					break;
 				case 'checkin':
 					checkin(obj.data);
+					break;
+				case 'autoHasher':
+					autocompleteHasher(obj.data);
 					break;
 			}
 		}
@@ -47,6 +50,14 @@
 		msg += hasher.isReturner() ? '<p>You haven\'t come since <mark>' + hasher.lasthash + '</mark>.</p>' : '';
 		msg += hasher.isNaming() ? '<p>Today is your <mark>naming</mark>.</p>' : '';
 		$('#console').prepend('<li>' + msg + '</li>');
+	}
+	
+	function autocompleteHasher(data) {
+		$('.auto ul').empty();
+		$.each(data, function(key, value) {
+			var h = new Hasher(value);
+			$('.auto ul').prepend('<li id="' + h.id + '"><span>' + h.hashname + '</span> ' + h.firstname + ' ' + h.lastname + '</li>');
+		});
 	}
 	
 	$(document).ready(function() {
@@ -127,7 +138,7 @@
 			$('.auto .selected').removeClass('selected');
 		})
 		.keyup(function() {
-			socket.send({ type: 'autohasher', data: serializeHasher() });
+			socket.send({ action: 'autoHasher', data: serializeHasher(), limit: 8 });
 		});
 		
 		function autoAssign() {
