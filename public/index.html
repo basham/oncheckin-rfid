@@ -112,7 +112,7 @@
 					autoAssign();
 					break;
 				case 65: // A
-					toggleAssignModal();
+					openAssignModal();
 					break;
 				case 27: // Escape
 					closeModal();
@@ -120,10 +120,14 @@
 			}
 		});
 		
-		$('form input').focus(function() {
+		$('form input')
+		.focus(function() {
 			$('form input').removeClass('focused disabled');
 			$(this).addClass('focused');
 			$('.auto .selected').removeClass('selected');
+		})
+		.keyup(function() {
+			socket.send({ type: 'autohasher', data: serializeHasher() });
 		});
 		
 		function autoAssign() {
@@ -135,22 +139,21 @@
 		}
 		
 		$('form').submit(function() {
-			var h = {
+			console.log( serializeHasher() );
+			return false;
+		});
+		
+		function serializeHasher() {
+			return {
 				rfid: $('#rfid').text(),
 				firstname: $('#firstname').val(),
 				lastname: $('#lastname').val(),
 				hashname: $('#hashname').hasClass('default') ? '' : $('#hashname').val() };
-			console.log( h );
-			return false;
-		});
-		
-		function toggleAssignModal() {
-			$('#overlay').toggle('fade', {}, 250);
-			$('#assign').toggle('slide', { direction:'up' }, 250);
 		}
 		
-		function assignModal() {
-			
+		function openAssignModal() {
+			$('#overlay:hidden').show('fade', {}, 250);
+			$('#assign:hidden').show('slide', { direction:'up' }, 250);
 		}
 		
 		function closeModal() {
