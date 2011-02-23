@@ -4,6 +4,7 @@
 	<title>Prototype</title>
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript" src="/js/jquery-1.5.min.js"></script>
+<script type="text/javascript" src="/js/jquery-ui-1.8.9.custom.min.js"></script>
 <script> 
 	var socket = new io.Socket('localhost', { port: 3000 }); 
 	socket.connect();
@@ -49,6 +50,8 @@
 	}
 	
 	$(document).ready(function() {
+		
+		$('#overlay, #assign').hide();
 		
 		$('#btn').click(function() {
 			message('Clearing');
@@ -108,6 +111,12 @@
 				case 13: // Return
 					autoAssign();
 					break;
+				case 65: // A
+					toggleAssignModal();
+					break;
+				case 27: // Escape
+					closeModal();
+					break;
 			}
 		});
 		
@@ -132,6 +141,25 @@
 				lastname: $('#lastname').val(),
 				hashname: $('#hashname').hasClass('default') ? '' : $('#hashname').val() };
 			console.log( h );
+			return false;
+		});
+		
+		function toggleAssignModal() {
+			$('#overlay').toggle('fade', {}, 250);
+			$('#assign').toggle('slide', { direction:'up' }, 250);
+		}
+		
+		function assignModal() {
+			
+		}
+		
+		function closeModal() {
+			$('#overlay:visible').hide('fade', {}, 250);
+			$('#assign:visible').hide('slide', { direction:'up' }, 250);
+		}
+		
+		$('.close').click(function() {
+			closeModal();
 			return false;
 		});
 		
@@ -391,7 +419,8 @@ form p {
 
 .auto span {
 	font-size: 18px;
-	color: #000; }
+	color: #000;
+	padding-right: 5px; }
 
 .auto li {
 	font-size: 14px;
@@ -418,30 +447,32 @@ form p {
 <div id="overlay"></div>
 
 <section id="assign" class="module">
-<section class="form">
-	<hgroup>
-		<a class="close" href="#">x</a>
-		<h2>Assign tag <span id="rfid">31007E05450F</span></h2>
-	</hgroup>
-	<form id="newhasher" autocomplete="off">
-		<div class="grid-2">
-			<p><label><input id="firstname" placeholder="First name"/></label></p>
-			<p><label><input id="lastname" placeholder="Last name"/></label></p>
-		</div>
-		<p><label><input id="hashname" placeholder="Hash name" class="default"/></label></p>
-	</form>
-</section>
-<section class="auto">
-	<ul>
-		<li id="55a7d7166c840b6cd05cf03e055462b90cba7015"><span>White Lightning</span> John Branigan</li>
-		<li><span>Untouched Private Panther</span> Chris Basham</li>
-		<li><span>Titty Symbol</span> Rebecca Petrush</li>
-		<li><span>Just Rob</span> Rob Begley</li>
-		<li><span>Faux Cock</span> John Wayne Hill</li>
-		<li><span>Plate Dicktonics</span> Dick Tracey</li>
-		<li><span>Just Chris</span> Chris Basgier</li>
-	</ul>
-</section>
+	<section class="form">
+		<hgroup>
+			<a class="close" href="#">x</a>
+			<h2>Assign tag <span id="rfid">31007E05450F</span></h2>
+		</hgroup>
+		<form id="newhasher" autocomplete="off">
+			<div class="grid-2">
+				<p><label><input id="firstname" placeholder="First name"/></label></p>
+				<p><label><input id="lastname" placeholder="Last name"/></label></p>
+			</div>
+			<p><label><input id="hashname" placeholder="Hash name" class="default"/></label></p>
+		</form>
+	</section>
+	<section class="auto">
+		<ul>
+		<!--
+			<li id="55a7d7166c840b6cd05cf03e055462b90cba7015"><span>White Lightning</span> John Branigan</li>
+			<li><span>Untouched Private Panther</span> Chris Basham</li>
+			<li><span>Titty Symbol</span> Rebecca Petrush</li>
+			<li><span>Just Rob</span> Rob Begley</li>
+			<li><span>Faux Cock</span> John Wayne Hill</li>
+			<li><span>Plate Dicktonics</span> Dick Tracey</li>
+			<li><span>Just Chris</span> Chris Basgier</li>
+		-->
+		</ul>
+	</section>
 </section>
 
 <section id="nav">
