@@ -138,8 +138,17 @@
 			$('.auto .selected').removeClass('selected');
 		})
 		.keyup(function() {
-			socket.send({ action: 'autoHasher', data: serializeHasher(), limit: 8 });
+			var serialized = serializeHasher();
+			var old = $(this).data('serializedHasher') || {};
+			if( compareSerializedHashers( old, serialized ) )
+				return;
+			$(this).data('serializedHasher', serialized);
+			socket.send({ action: 'autoHasher', data: serialized, limit: 8 });
 		});
+		
+		function compareSerializedHashers(a, b) {
+			return a.firstname == b.firstname && a.lastname == b.lastname && a.hashname == b.hashname;
+		}
 		
 		function autoAssign() {
 			if( $('.auto .selected').length ) {
