@@ -56,7 +56,7 @@
 		$('.auto ul').empty();
 		$.each(data, function(key, value) {
 			var h = new Hasher(value);
-			$('.auto ul').prepend('<li id="' + h.id + '"><span>' + h.hashname + '</span> ' + h.firstname + ' ' + h.lastname + '</li>');
+			$('.auto ul').append('<li id="' + h.id + '"><span>' + h.hashname + '</span> ' + h.firstname + ' ' + h.lastname + '</li>');
 		});
 	}
 	
