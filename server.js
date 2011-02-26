@@ -135,11 +135,11 @@ rfid.send = function(id) {
 	var h = getHasher(id);
 	if( !h ) {
 		sys.puts('Assign tag: ' + id);
-		socket.broadcast({ type: 'assign', data: id });
+		socket.broadcast({ action: 'assign', data: id });
 		return;
 	}
 	sys.puts('Checking in: ' + ( h.hashname ? h.hashname : 'Just ' + h.firstname ));
-	socket.broadcast({ type: 'checkin', data: h });
+	socket.broadcast({ action: 'checkin', data: h });
 	//socket.broadcast({ data: [this.find(id)] });
 }
 
