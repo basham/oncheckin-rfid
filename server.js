@@ -155,16 +155,16 @@ function autocompleteHasher(data, limit) {
 	return auto;
 }
 
-function assignRegistered(data) {
-	rfids[data.rfid] = data.id;
+function assignRegistered(id, rfid) {
+	rfids[rfid] = id;
 	saveRFIDs();
-	return getHasherById( data.id );
+	return getHasherById( id );
 }
 
-function register(data) {
-	var h = new Hasher( data.hasher );
+function register(hasher, rfid) {
+	var h = new Hasher( hasher );
 	hashers.push( h );
-	rfids[data.rfid] = h.id;
+	rfids[rfid] = h.id;
 	saveRoster();
 	saveRFIDs();
 	return h;
@@ -220,10 +220,10 @@ socket.on('connection', function(client){
 				socket.broadcast({ action: 'autoHasher', data: autocompleteHasher(message.data, message.limit) });
 				break;
 			case 'assignRegistered':
-				socket.broadcast({ action: 'assignRegistered', data: assignRegistered(message.data) });
+				socket.broadcast({ action: 'assignRegistered', data: assignRegistered(message.data.id, message.data.rfid) });
 				break;
 			case 'register':
-				socket.broadcast({ action: 'register', data: register(message.data) });
+				socket.broadcast({ action: 'register', data: register(message.data.hasher, message.data.rfid) });
 				break;
 		}
 	})
