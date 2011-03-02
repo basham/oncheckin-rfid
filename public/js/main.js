@@ -21,6 +21,9 @@ socket.on('message', function(obj) {
 			case 'autoHasher':
 				autocompleteHasher(obj.data);
 				break;
+			case 'assigned':
+				feedback('Assigned tag to hasher.');
+				break;
 		}
 	}
 });
@@ -35,6 +38,8 @@ function data(d) {
 }
 
 function checkin(hasher) {
+	closeModal();
+	
 	hasher = new Hasher(hasher);
 	var msg = '';
 	msg += '<strong>' + hasher.hashname + '</strong>';
@@ -54,6 +59,7 @@ function autocompleteHasher(data) {
 
 function serializeHasher() {
 	return {
+		id: null,
 		rfid: $('#rfid').text(),
 		firstname: $('#firstname').val(),
 		lastname: $('#lastname').val(),
@@ -62,9 +68,10 @@ function serializeHasher() {
 
 function openAssignModal(rfid) {
 	$('#rfid').text(rfid);
+	if( $('#assign').is(':visible') ) // New tag was scanned when modal was already open
+		feedback('Assigning new tag: ' + rfid);
 	$('#overlay:hidden').show('fade', {}, 250);
 	$('#assign:hidden').center().show('slide', { direction:'up' }, 250);
-	feedback('Assigning new tag: ' + rfid);
 }
 
 function closeModal() {
@@ -84,11 +91,19 @@ function compareSerializedHashers(a, b) {
 }
 
 function autoAssign() {
+	
+	var h = serializeHasher();
+	h.id = $('.auto .selected').length ? $('.auto .selected').attr('id') : null;
+	socket.send({ action: 'assign', data: h })
+	
+	/*
 	if( $('.auto .selected').length ) { // Assign tag to registered hasher
+		socket.send({ action: 'assign'})
 		console.log( $('.auto .selected').attr('id') );
 	}
 	else // Assign tag to unregistered hasher
 		$('form').submit();
+	*/
 }
 
 function feedback(msg) {
@@ -100,34 +115,6 @@ function feedback(msg) {
 		.idle( ( msg.length * 40) + 1000 )
 		.hide('slide', { direction:'down' }, 250);
 }
-
-
-(function($){ 
-
-jQuery.fn.center = function() {
-	var o = $(this);
-	o.css('left', ( $(window).width() - o.outerWidth() ) / 2);
-	return o;
-};
-
-jQuery.fn.idle = function(time) {
-	var o = $(this);
-	o.queue(function() {
-		o.data('timeoutId', setTimeout(function() {
-			o.dequeue();
-		}, time) );
-	});
-	return o;
-};
-
-jQuery.fn.clearIdle = function(time) {
-	var o = $(this);
-	clearTimeout( o.data('timeoutId') );
-	o.dequeue();
-	return o;
-};
-
-})(jQuery);
 
 
 $(document).ready(function() {
@@ -214,7 +201,7 @@ $(document).ready(function() {
 
 	// Assign tag to unregistered hasher
 	$('form').submit(function() {
-		console.log( serializeHasher() );
+		//console.log( serializeHasher() );
 		return false;
 	});
 

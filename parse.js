@@ -28,7 +28,7 @@ reader
 		longestname = data.hashname.length > longestname.length ? data.hashname : longestname;
 		nameavg += data.hashname.length;
 		
-		data.id = Hash.sha1((data.lastname + data.firstname).toLowerCase());
+		//data.id = Hash.sha1((data.lastname + data.firstname).toLowerCase());
 		hashers.push( new Hasher(data) );
 	}
 })
@@ -44,17 +44,13 @@ reader
 			n++;
 	}
 
-fs.writeFile('data/roster.json', JSON.stringify(hashers), function (err) {
-  if (err) throw err;
-  sys.puts('Saved roster.');
-});
-
 	sys.puts('TOTAL: ' + hashers.length);
 	sys.puts('ANNIVERSARIES: ' + a);
 	sys.puts('NAMINGS: ' + n);
 	sys.puts('LONGEST NAME: ' + longestname.length + ' | ' + longestname);
 	sys.puts('NAME LENGTH AVG: ' + ( nameavg / named ));
 	//sys.puts(JSON.stringify(rfids));
+	saveRoster();
 	saveRFIDs();
 });
 
@@ -79,15 +75,21 @@ var rfids = {
 	'3D002133321D': '5388b3b24f6c5646e9221b0555961f70ceb43069' // White Lightning
 };
 
+function saveRoster() {
+	fs.writeFile('data/roster.json', JSON.stringify(hashers), function (err) {
+		if (err) throw err;
+		sys.puts('Saved roster.');
+	});
+}
+
 function saveRFIDs() {
 	fs.writeFile('data/rfids.json', JSON.stringify(rfids), function (err) {
-	  if (err) throw err;
-	  sys.puts('Saved RFIDs.');
+		if (err) throw err;
+		sys.puts('Saved RFIDs.');
 	});
 }
 
 function Hasher(obj) {
-	this.id = obj.id;
 	this.firstname = obj.firstname || '';
 	this.lastname = obj.lastname || '';
 	this.hashname = obj.hashname || '';
@@ -95,7 +97,8 @@ function Hasher(obj) {
 	this.hashes = obj.hashes || 0;
 	this.hares = obj.hares || 0;
 	this.lasthash = obj.lasthash || '';
-
+	this.id = obj.id || Hash.sha1((obj.lastname + obj.firstname).toLowerCase());
+	
 	this.name = function() {
 		return this.hashname ? this.hashname : 'Just ' + this.firstname;
 	};

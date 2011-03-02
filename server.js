@@ -171,6 +171,29 @@ function autocompleteHasher(data, limit) {
 	return auto;
 }
 
+function assignTag(data) {
+	if( data.id == null ) {
+		hashers.push( new Hasher(data) );
+		saveRoster();
+	}
+	rfids[data.rfid] = data.id;
+	saveRFIDs();
+	return true;
+}
+
+function saveRoster() {
+	fs.writeFile('data/roster.json', JSON.stringify(hashers), function (err) {
+		if (err) throw err;
+		sys.puts('Saved roster.');
+	});
+}
+
+function saveRFIDs() {
+	fs.writeFile('data/rfids.json', JSON.stringify(rfids), function (err) {
+	  if (err) throw err;
+	  sys.puts('Saved RFIDs.');
+	});
+}
 
 
 var express = require('express');
@@ -207,6 +230,9 @@ socket.on('connection', function(client){
 			case 'autoHasher':
 				socket.broadcast({ action: 'autoHasher', data: autocompleteHasher(message.data, message.limit) });
 				break;
+			case 'assign':
+				socket.broadcast({ action: 'assigned', data: assignTag(message.data) });
+				break;
 		}
 	})
 	
@@ -214,6 +240,33 @@ socket.on('connection', function(client){
 });
 
 
+
+function Hasher(obj) {
+	this.firstname = obj.firstname || '';
+	this.lastname = obj.lastname || '';
+	this.hashname = obj.hashname || '';
+	this.rfid = obj.rfid || '';
+	this.hashes = obj.hashes || 0;
+	this.hares = obj.hares || 0;
+	this.lasthash = obj.lasthash || '';
+	this.id = obj.id || Hash.sha1((obj.lastname + obj.firstname).toLowerCase());
+	
+	this.name = function() {
+		return this.hashname ? this.hashname : 'Just ' + this.firstname;
+	};
+	this.isAnniversary = function() {
+		return ( this.hashes % 5 == 0 && this.hashes > 0 ) || this.hashes == 69;
+	};
+	this.isNaming = function() {
+		return this.hashes > 0 && this.hashname.length == 0;
+	};
+	this.isReturner = function() {
+		return this.lasthash < latesthash;
+	}
+	this.isVirgin = function() {
+		return this.hashes == 0;
+	}
+}
 
 /*
 (function() {
