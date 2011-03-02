@@ -1,6 +1,9 @@
 var sys = require('sys');
 var fs = require('fs');
 var $ = require('jquery'); 
+require('joose');
+require('joosex-namespace-depended');
+require('hash');
 
 function RFID(serial) {
 	
@@ -103,6 +106,14 @@ function getHasher(rfid) {
 	return null;
 }
 
+function getHasherById(id) {
+	for( var i = 0; i < hashers.length; i++ ) {
+		if ( hashers[i].id == id )
+			return hashers[i];
+	}
+	return null;
+}
+
 /*
 var db = [];
 db['2800F7D85D5A'] = 'Chris';
@@ -172,13 +183,34 @@ function autocompleteHasher(data, limit) {
 }
 
 function assignTag(data) {
+	var h;
+	
 	if( data.id == null ) {
-		hashers.push( new Hasher(data) );
-		saveRoster();
+		h = new Hasher(data);
+		hashers.push( h );
+		//saveRoster();
+	}
+	else {
+		h = new Hasher( getHasherById( data.id ) );
 	}
 	rfids[data.rfid] = data.id;
+	//saveRFIDs();
+	return h;
+}
+
+function assignRegistered(data) {
+	rfids[data.rfid] = data.id;
 	saveRFIDs();
-	return true;
+	return getHasherById( data.id );
+}
+
+function register(data) {
+	var h = new Hasher( data );
+	hashers.push( h );
+	rfids[data.rfid] = h.id;
+	saveRoster();
+	saveRFIDs();
+	return h;
 }
 
 function saveRoster() {
@@ -230,8 +262,14 @@ socket.on('connection', function(client){
 			case 'autoHasher':
 				socket.broadcast({ action: 'autoHasher', data: autocompleteHasher(message.data, message.limit) });
 				break;
-			case 'assign':
-				socket.broadcast({ action: 'assigned', data: assignTag(message.data) });
+			//case 'assign':
+			//	socket.broadcast({ action: 'assigned', data: assignTag(message.data) });
+			//	break;
+			case 'assignRegistered':
+				socket.broadcast({ action: 'assignRegistered', data: assignRegistered(message.data) });
+				break;
+			case 'register':
+				socket.broadcast({ action: 'register', data: register(message.data) });
 				break;
 		}
 	})

@@ -21,8 +21,15 @@ socket.on('message', function(obj) {
 			case 'autoHasher':
 				autocompleteHasher(obj.data);
 				break;
-			case 'assigned':
-				feedback('Assigned tag to hasher.');
+			case 'assignRegistered':
+				var h = new Hasher( obj.data );
+				feedback('Assigned tag to registered hasher, ' + h.hashname + '.');
+				closeModal();
+				break;
+			case 'register':
+				var h = new Hasher( obj.data );
+				feedback('Assigned tag to new hasher, ' + h.hashname + '.');
+				closeModal();
 				break;
 		}
 	}
@@ -92,10 +99,16 @@ function compareSerializedHashers(a, b) {
 
 function autoAssign() {
 	
+	if( $('.auto .selected').length )
+		socket.send({ action: 'assignRegistered', data: { id: $('.auto .selected').attr('id'), rfid: $('#rfid').text() } });
+	else
+		socket.send({ action: 'register', data: serializeHasher() });
+	
+	/*
 	var h = serializeHasher();
 	h.id = $('.auto .selected').length ? $('.auto .selected').attr('id') : null;
 	socket.send({ action: 'assign', data: h })
-	
+	*/
 	/*
 	if( $('.auto .selected').length ) { // Assign tag to registered hasher
 		socket.send({ action: 'assign'})
@@ -176,7 +189,8 @@ $(document).ready(function() {
 				autoAssign();
 				break;
 			case 65: // A
-				openAssignModal();
+				//if( $('#assign').is(':hidden') )
+				//	openAssignModal();
 				break;
 			case 27: // Escape
 				closeModal();
