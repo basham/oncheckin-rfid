@@ -237,7 +237,7 @@ function Hasher(obj) {
 	this.firstname = obj.firstname || '';
 	this.lastname = obj.lastname || '';
 	this.hashname = obj.hashname || '';
-	this.hashes = obj.hashes || 0;
+	this.hashes = obj.hashes || 1;
 	this.hares = obj.hares || 0;
 	this.lasthash = obj.lasthash || '';
 	this.id = obj.id || Hash.sha1((obj.lastname + obj.firstname).toLowerCase());

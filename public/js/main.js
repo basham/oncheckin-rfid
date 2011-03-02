@@ -8,7 +8,7 @@ socket.connect()
 				openAssignModal(obj.data);
 				break;
 			case 'checkin': // Assigned RFID is scanned
-				checkin(obj.data);
+				checkinHasher(obj.data);
 				break;
 			case 'autoHasher': // Autocomplete results from registration form
 				autocompleteHasher(obj.data);
@@ -28,16 +28,40 @@ socket.connect()
 })
 .on('disconnect', function(){ feedback('Disconnected from server.') });
 
-function checkin(hasher) {
+function checkinHasher(hasher) {
 	closeModal();
 	
 	hasher = new Hasher(hasher);
+	
+	if( !hash.checkIn(hasher) )
+		return;
+	
+	updateStats();
+	
 	var msg = '';
 	msg += '<strong>' + hasher.hashname + '</strong>';
 	msg += hasher.isAnniversary() ? '<p>You\'re celebrating your <mark>' + hasher.hashes + ' hash</mark>.</p>' : '<p>Today is your <mark>' + hasher.hashes + ' hash</mark>.</p>';
 	msg += hasher.isReturner() ? '<p>You haven\'t come since <mark>' + hasher.lasthash + '</mark>.</p>' : '';
 	msg += hasher.isNaming() ? '<p>Today is your <mark>naming</mark>.</p>' : '';
 	$('#console').prepend('<li>' + msg + '</li>');
+}
+
+function updateStats() {
+	var nav = $('nav ul').empty();
+	var stats = hash.getStats();
+	if( stats.attendees )
+		nav.append('<li><span>' + stats.attendees + '</span> ' + pluralize(stats.attendees, 'Attendee') + '</li>');
+	if( stats.anniversaries )
+		nav.append('<li><span>' + stats.anniversaries + '</span> ' + pluralize(stats.anniversaries, 'Anniversary', 'Anniversaries') + '</li>');
+	if( stats.returners )
+		nav.append('<li><span>' + stats.returners + '</span> ' + pluralize(stats.returners, 'Returner') + '</li>');
+	if( stats.virgins )
+		nav.append('<li><span>' + stats.virgins + '</span> ' + pluralize(stats.virgins, 'Virgin') + '</li>');
+}
+
+function pluralize(value, singular, plural) {
+	plural = plural || singular + 's';
+	return value == 1 ? singular : plural;
 }
 
 function autocompleteHasher(data) {
@@ -187,14 +211,15 @@ $(document).ready(function() {
 
 var latesthash = '20110219';
 
-function Hasher(obj) {
-	this.id = obj.id;
-	this.firstname = obj.firstname || '';
-	this.lastname = obj.lastname || '';
-	this.hashname = obj.hashname ? obj.hashname : 'Just ' + this.firstname;
-	this.hashes = parseInt(obj.hashes) || 0;
-	this.hares = parseInt(obj.hares) || 0;
-	this.lasthash = obj.lasthash || latesthash;
+function Hasher(options) {
+	options = options || {};
+	this.id = options.id;
+	this.firstname = options.firstname || '';
+	this.lastname = options.lastname || '';
+	this.hashname = options.hashname ? options.hashname : 'Just ' + this.firstname;
+	this.hashes = parseInt(options.hashes) || 1;
+	this.hares = parseInt(options.hares) || 0;
+	this.lasthash = options.lasthash || latesthash;
 
 	this.isAnniversary = function() {
 		return ( this.hashes % 5 == 0 && this.hashes > 0 ) || this.hashes == 69;
@@ -206,6 +231,135 @@ function Hasher(obj) {
 		return this.lasthash < latesthash;
 	}
 	this.isVirgin = function() {
-		return this.hashes == 0;
+		return this.hashes <= 1;
 	}
+}
+/*
+var hash = {
+	title: 'Rehash of the Titans',
+	attendees: [ 1, 2 ],
+	checkins: [
+		{
+			type: 'signin', // signin|beercheck|onin|onafter
+			checkedin: [ 1 ]
+		}
+	]
+};
+*/
+var hash = new Hash();
+
+function Hash(options) {
+	options = options || {};
+	this.title = options.title || 'Rehash of the Titans';
+	this.attendees = options.attendees || [];
+	this.hashers = []; // Temporary storage of hasher data
+	this.checkIns = options.checkIns || [ new CheckIn() ];
+	
+	this.newCheckIn = function(type) {
+		this.checkIns.push( new CheckIn({ type: type }) );
+	};
+	
+	this.loadCheckIns = function(checkIns) {
+		var ci = [];
+		
+	//	this.checkIns
+	};
+	
+	this.checkIn = function(hasher) {
+		if( this.latestCheckIn().checkIn(hasher) ) {
+			for( var i = 0; i < this.attendees; i++ )
+				if( this.attendees[i] == hasher.id ) // The hasher has checked in at least once at this hash
+					return true;
+			this.attendees.push( hasher.id ); // This is the hasher's first check in for this hash
+			this.hashers.push( hasher );
+			if( this.checkIns.length > 1 )
+				feedback('You\'re signing in late, ' + hasher.hashname + '.');
+			return true;
+		}
+		feedback('You\'re already checked in, ' + hasher.hashname + '.');
+		return false;
+	};
+	
+	this.latestCheckIn = function() {
+		if( this.checkIns.length )
+			return this.checkIns[ this.checkIns.length - 1 ];
+		return null;
+	};
+	
+	this.getAttendees = function() {
+		return this.attendees;
+	};
+
+	this.getAnniversaries = function() {
+		var a = [];
+		for( var i = 0; i < this.hashers.length; i++ )
+			if( this.hashers[i].isAnniversary() )
+				a.push( this.hashers[i] );
+		return a;
+	};
+
+	this.getNamings = function() {
+		var a = [];
+		for( var i = 0; i < this.hashers.length; i++ )
+			if( this.hashers[i].isNaming() )
+				a.push( this.hashers[i] );
+		return a;
+	};
+
+	this.getReturners = function() {
+		var a = [];
+		for( var i = 0; i < this.hashers.length; i++ )
+			if( this.hashers[i].isReturner() )
+				a.push( this.hashers[i] );
+		return a;
+	};
+	
+	this.getVirgins = function() {
+		var a = [];
+		for( var i = 0; i < this.hashers.length; i++ )
+			if( this.hashers[i].isVirgin() )
+				a.push( this.hashers[i] );
+		return a;
+	};
+	
+	this.getStats = function() {
+		return {
+			attendees: this.getAttendees().length,
+			anniversaries: this.getAnniversaries().length,
+			returners: this.getReturners().length,
+			virgins: this.getVirgins().length };
+	};
+}
+
+function CheckIn(options) {
+	options = options || {};
+	this.type = options.type || 'signin';
+	this.checkedIn = options.checkedIn || [];
+	
+	this.checkIn = function(hasher) {
+		if( this.isCheckedIn(hasher) )
+			return false;
+		this.checkedIn.push( hasher.id );
+		return true;
+	};
+	
+	this.isCheckedIn = function(hasher) {
+		for( var i = 0; i < this.checkedIn.length; i++ )
+			if( this.checkedIn[i] == hasher.id )
+				return true;
+		return false;
+	};
+	
+	this.label = function() {
+		switch( this.type ) {
+			case 'signin':
+				return 'Sign in';
+			case 'beercheck':
+				return 'Beer Check';
+			case 'onin':
+				return 'On In';
+			case 'onafter':
+				return 'On after';
+		}
+	};
 }
