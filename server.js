@@ -75,28 +75,9 @@ var hash = {
 		}
 	]
 };
-/*
-var hashers = [
-	{
-		id: 1,
-		firstname: 'Chris',
-		lastname: 'Basham',
-		hashname: 'Untouched Private Panther',
-		rfid: '3D002123221D',
-		hashes: 15,
-		hares: 1,
-		lasthash: '20110219' },
-	{
-		id: 2,
-		firstname: 'Rob',
-		lastname: 'Begley',
-		hashname: '',
-		rfid: '31007E195503',
-		hashes: 9,
-		hares: 0,
-		lasthash: '20101211' }
-];
-*/
+
+
+
 
 function getHasher(rfid) {
 	for( var i = 0; i < hashers.length; i++ ) {
@@ -114,14 +95,7 @@ function getHasherById(id) {
 	return null;
 }
 
-/*
-var db = [];
-db['2800F7D85D5A'] = 'Chris';
-db['3D00215B3671'] = 'Nick';
-db['31007E05450F'] = 'Alex';
-db['2800F78784DC'] = 'UPP';
-db['3D0021673F44'] = 'Faux Cock';
-*/
+
 var rfids = {};
 
 fs.readFile('data/rfids.json', function (err, data) {
@@ -151,7 +125,6 @@ rfid.send = function(id) {
 	}
 	sys.puts('Checking in: ' + ( h.hashname ? h.hashname : 'Just ' + h.firstname ));
 	socket.broadcast({ action: 'checkin', data: h });
-	//socket.broadcast({ data: [this.find(id)] });
 }
 
 rfid.sendAll = function() {
@@ -180,22 +153,6 @@ function autocompleteHasher(data, limit) {
 			auto.push(h);
 	}
 	return auto;
-}
-
-function assignTag(data) {
-	var h;
-	
-	if( data.id == null ) {
-		h = new Hasher(data);
-		hashers.push( h );
-		//saveRoster();
-	}
-	else {
-		h = new Hasher( getHasherById( data.id ) );
-	}
-	rfids[data.rfid] = data.id;
-	//saveRFIDs();
-	return h;
 }
 
 function assignRegistered(data) {
@@ -262,9 +219,6 @@ socket.on('connection', function(client){
 			case 'autoHasher':
 				socket.broadcast({ action: 'autoHasher', data: autocompleteHasher(message.data, message.limit) });
 				break;
-			//case 'assign':
-			//	socket.broadcast({ action: 'assigned', data: assignTag(message.data) });
-			//	break;
 			case 'assignRegistered':
 				socket.broadcast({ action: 'assignRegistered', data: assignRegistered(message.data) });
 				break;
@@ -335,29 +289,4 @@ function Hasher(obj) {
     });
   });
 })();
-*/
-
-
-
-/*
-
-var io = io.listen(server)
-  , buffer = [];
-  
-io.on('connection', function(client){
-  client.send({ buffer: buffer });
-  client.broadcast({ announcement: client.sessionId + ' connected' });
-  
-  client.on('message', function(message){
-    var msg = { message: [client.sessionId, message] };
-    buffer.push(msg);
-    if (buffer.length > 15) buffer.shift();
-    client.broadcast(msg);
-  });
-
-  client.on('disconnect', function(){
-    client.broadcast({ announcement: client.sessionId + ' disconnected' });
-  });
-});
-
 */
