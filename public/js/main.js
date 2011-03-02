@@ -1,48 +1,32 @@
 var socket = new io.Socket('localhost', { port: 3000 }); 
-socket.connect();
-socket.on('connect', function(){ message('Connected client-side') });
-socket.on('message', function(obj) {
-	if ( 'message' in obj )
-		message(obj.message);
-	/*
-	if ( 'data' in obj ) {
-		for (var d in obj.data)
-			data( obj.data[d] );
-	}
-	*/
+socket.connect()
+.on('connect', function(){ feedback('Connected to server.') })
+.on('message', function(obj) {
 	if( 'action' in obj ) {
 		switch( obj.action ) {
-			case 'assign':
+			case 'assign': // Unassigned RFID is scanned
 				openAssignModal(obj.data);
 				break;
-			case 'checkin':
+			case 'checkin': // Assigned RFID is scanned
 				checkin(obj.data);
 				break;
-			case 'autoHasher':
+			case 'autoHasher': // Autocomplete results from registration form
 				autocompleteHasher(obj.data);
 				break;
-			case 'assignRegistered':
+			case 'assignRegistered': // RFID assigned to hasher already in database
 				var h = new Hasher( obj.data );
 				feedback('Assigned tag to registered hasher, ' + h.hashname + '.');
 				closeModal();
 				break;
-			case 'register':
+			case 'register': // RFID assigned to newly registered hasher
 				var h = new Hasher( obj.data );
 				feedback('Assigned tag to new hasher, ' + h.hashname + '.');
 				closeModal();
 				break;
 		}
 	}
-});
-socket.on('disconnect', function(){ });
-
-function message(msg) {
-	//$('#console').prepend('<li><em>' + msg + '</em></li>');
-}
-
-function data(d) {
-	$('#console').prepend('<li>' + d + '</li>');
-}
+})
+.on('disconnect', function(){ feedback('Disconnected from server.') });
 
 function checkin(hasher) {
 	closeModal();
@@ -98,25 +82,10 @@ function compareSerializedHashers(a, b) {
 }
 
 function autoAssign() {
-	
 	if( $('.auto .selected').length )
 		socket.send({ action: 'assignRegistered', data: { id: $('.auto .selected').attr('id'), rfid: $('#rfid').text() } });
 	else
 		socket.send({ action: 'register', data: serializeHasher() });
-	
-	/*
-	var h = serializeHasher();
-	h.id = $('.auto .selected').length ? $('.auto .selected').attr('id') : null;
-	socket.send({ action: 'assign', data: h })
-	*/
-	/*
-	if( $('.auto .selected').length ) { // Assign tag to registered hasher
-		socket.send({ action: 'assign'})
-		console.log( $('.auto .selected').attr('id') );
-	}
-	else // Assign tag to unregistered hasher
-		$('form').submit();
-	*/
 }
 
 function feedback(msg) {
@@ -133,31 +102,6 @@ function feedback(msg) {
 $(document).ready(function() {
 
 	$('#overlay, #assign, #feedback').hide();
-
-	$('#btn').click(function() {
-		message('Clearing');
-		socket.send({ action: 'clear' });
-	});
-
-	//$('#kennel').val('Blooming Fools');
-
-	$('#firstname').keyup(function() {
-		if( !$('#hashname').hasClass('default') )
-			return;
-		$('#hashname').val( defaultHashname() );
-	});
-
-	$('#hashname').keyup(function() {
-		if( $(this).val() == defaultHashname() )
-			$(this).addClass('default');
-		else
-			$(this).removeClass('default');
-	});
-
-	$('#hashname').blur(function() {
-		if( $(this).val().length == 0 )
-			$(this).addClass('default').val( defaultHashname() );
-	});
 
 	$(this).keyup(function(event) {
 		switch( event.keyCode ) {
@@ -189,7 +133,6 @@ $(document).ready(function() {
 				autoAssign();
 				break;
 			case 65: // A
-				//if( $('#assign').is(':hidden') )
 				//	openAssignModal();
 				break;
 			case 27: // Escape
@@ -213,12 +156,29 @@ $(document).ready(function() {
 		socket.send({ action: 'autoHasher', data: serialized, limit: 8 });
 	});
 
-	// Assign tag to unregistered hasher
-	$('form').submit(function() {
-		//console.log( serializeHasher() );
-		return false;
+	$('#btn').click(function() {
+		message('Clearing');
+		socket.send({ action: 'clear' });
 	});
 
+	$('#firstname').keyup(function() {
+		if( !$('#hashname').hasClass('default') )
+			return;
+		$('#hashname').val( defaultHashname() );
+	});
+
+	$('#hashname').keyup(function() {
+		if( $(this).val() == defaultHashname() )
+			$(this).addClass('default');
+		else
+			$(this).removeClass('default');
+	});
+
+	$('#hashname').blur(function() {
+		if( $(this).val().length == 0 )
+			$(this).addClass('default').val( defaultHashname() );
+	});
+	
 	$('.close').click(function() {
 		closeModal();
 		return false;
@@ -251,54 +211,3 @@ function Hasher(obj) {
 		return this.hashes == 0;
 	}
 }
-
-/*
-var upp = new Hasher({
-	firstname: 'Chris',
-	lastname: 'Basham',
-	hashname: 'Untouched Private Panther',
-	rfid: '3D002123221D',
-	hashes: 15,
-	hares: 1,
-	lasthash: '20110219' });
-
-var rob = new Hasher({
-	firstname: 'Rob',
-	lastname: 'Begley',
-	hashname: '',
-	rfid: '31007E195503',
-	hashes: 9,
-	hares: 0,
-	lasthash: '20101211' });
-	*/
-/*
-      function message(obj){
-       var el = document.createElement('p');
-       if ('announcement' in obj) el.innerHTML = '<em>' + esc(obj.announcement) + '</em>';
-       else if ('message' in obj) el.innerHTML = '<b>' + esc(obj.message[0]) + ':</b> ' + esc(obj.message[1]);
-       document.getElementById('chat').appendChild(el);
-       document.getElementById('chat').scrollTop = 1000000;
-     }
-    
-     function send(){
-       var val = document.getElementById('text').value;
-       socket.send(val);
-       message({ message: ['you', val] });
-       document.getElementById('text').value = '';
-     }
-    
-     function esc(msg){
-       return msg.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-     };
-    
-     var socket = new io.Socket(null, {port: 8080, rememberTransport: false});
-     socket.connect();
-     socket.on('message', function(obj){
-       if ('buffer' in obj){
-         document.getElementById('form').style.display='block';
-         document.getElementById('chat').innerHTML = '';
-        
-         for (var i in obj.buffer) message(obj.buffer[i]);
-       } else message(obj);
-     });
-*/
