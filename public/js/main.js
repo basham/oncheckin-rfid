@@ -50,8 +50,6 @@ function autocompleteHasher(data) {
 
 function serializeHasher() {
 	return {
-		id: null,
-		rfid: $('#rfid').text(),
 		firstname: $('#firstname').val(),
 		lastname: $('#lastname').val(),
 		hashname: $('#hashname').hasClass('default') ? '' : $('#hashname').val() };
@@ -82,10 +80,11 @@ function compareSerializedHashers(a, b) {
 }
 
 function autoAssign() {
+	var rfid = $('#rfid').text();
 	if( $('.auto .selected').length )
-		socket.send({ action: 'assignRegistered', data: { id: $('.auto .selected').attr('id'), rfid: $('#rfid').text() } });
+		socket.send({ action: 'assignRegistered', data: { id: $('.auto .selected').attr('id'), rfid: rfid } });
 	else
-		socket.send({ action: 'register', data: serializeHasher() });
+		socket.send({ action: 'register', data: { hasher: serializeHasher(), rfid: rfid } });
 }
 
 function feedback(msg) {
@@ -193,7 +192,6 @@ function Hasher(obj) {
 	this.firstname = obj.firstname || '';
 	this.lastname = obj.lastname || '';
 	this.hashname = obj.hashname ? obj.hashname : 'Just ' + this.firstname;
-	this.rfid = obj.rfid || '';
 	this.hashes = parseInt(obj.hashes) || 0;
 	this.hares = parseInt(obj.hares) || 0;
 	this.lasthash = obj.lasthash || latesthash;

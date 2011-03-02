@@ -162,7 +162,7 @@ function assignRegistered(data) {
 }
 
 function register(data) {
-	var h = new Hasher( data );
+	var h = new Hasher( data.hasher );
 	hashers.push( h );
 	rfids[data.rfid] = h.id;
 	saveRoster();
@@ -237,7 +237,6 @@ function Hasher(obj) {
 	this.firstname = obj.firstname || '';
 	this.lastname = obj.lastname || '';
 	this.hashname = obj.hashname || '';
-	this.rfid = obj.rfid || '';
 	this.hashes = obj.hashes || 0;
 	this.hares = obj.hares || 0;
 	this.lasthash = obj.lasthash || '';
