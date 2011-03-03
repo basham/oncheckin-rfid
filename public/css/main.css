@@ -1,43 +1,27 @@
 @import 'reset.css';
 
+html {
+	height: 100%;
+	background: #7F7F7F; }
+
 body {
 	overflow-x: hidden;
-	background: #CCC;
-	font-family: 'Helvetica Neue', Helvetica, sans-serif; }
-
-#nav {
-	position: fixed;
-	width: 280px;
+	font-family: 'Helvetica Neue', Helvetica, sans-serif;
 	height: 100%;
-	background: #DDDDDD; }
+	background: -webkit-gradient(linear, left top, left bottom, from(#E5E5E5), to(#7F7F7F)); }
 
 #body {
 	position: absolute;
-	left: 280px;
-	height: 100%; }
-
-h1 {
-	padding: 20px;
-	font-size: 24px;
-	font-weight: 200; }
-
-nav {
-	padding: 20px; }
-
-nav li {
-	font-size: 24px;
-	padding: 10px 0; }
-
-nav li span {
-	font-weight: bold; }
+	width: 100%; }
 
 #console {
-	padding: 20px; }
+	padding-left: 280px; }
 
 #console li {
 	opacity: .25;
 	font-weight: 200;
-	font-size: 200%; }
+	font-size: 200%;
+	padding: 5px 40px; }
 
 #console li p {
 	color: rgba(0, 0, 0, .5);
@@ -49,7 +33,10 @@ nav li span {
 	
 #console li:first-child {
 	opacity: 1;
-	margin-bottom: 20px; }
+	margin-bottom: 20px;
+	padding: 40px;
+	border-bottom: 1px solid rgba(0, 0, 0, .25);
+	background: -webkit-gradient(linear, left top, left bottom, from(rgba(100%, 100%, 100%, .75)), to(rgba(100%, 100%, 100%, .25))); }
 	
 #console li:first-child strong {
 	font-size: 200%;
@@ -201,4 +188,123 @@ form p {
 	padding: 20px 30px 20px;
 	border-radius: 10px 10px 0 0;
 	-webkit-box-shadow: 0 10px 5px rgba(0, 0, 0, .5); }
+
+
+#menu {
+	position: fixed;
+	width: 340px;
+	height: 100%;
+	opacity: 1;
+	background: rgba(100%, 100%, 100%, .75);
+	border-right: 1px solid rgba(0, 0, 0, .5);
+	-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, .5); }
+
+#menu hgroup {
+	padding-bottom: 20px;
+	padding: 20px;
+	border-bottom: 1px solid rgba(0, 0, 0, .25);
+	background: -webkit-gradient(linear, left top, left bottom, from(rgba(100%, 100%, 100%, 0)), to(rgba(100%, 100%, 100%, 1))); }
+
+h1 {
+	font-size: 24px;
+	font-weight: 200;
+	margin: 0 0 20px; }
+
+h2 {
+	color: rgba(0, 0, 0, .5);
+	font-weight: 200;
+	font-size: 24px; }
+
+h2 span {
+	font-size: 115%;
+	font-weight: 400;
+	color: rgba(0, 0, 0, 1); }
+
+h3, .miss, nav.toggle li {
+	font-weight: bold;
+	font-size: 14px;
+	margin: 10px 5px;
+	padding: 5px 10px;
+	color: rgba(0, 0, 0, .4);
+	text-transform: uppercase;
+	text-shadow: #FFFFFF 0 1px 0; }
+
+
+
+
+#missingside {
+	position: absolute;
+	right: 0;
+	height: 100%;
+	text-align: right;
+	background: rgba(100%, 100%, 100%, .5); }
 	
+#missingside li {
+	font-size: 150%;
+	font-weight: 200;
+	padding: 5px 15px; }
+
+
+nav.toggle li {
+	float: left;
+	opacity: .1; }
+
+nav.toggle li.selected {
+	opacity: 1;
+	background: rgba(200, 0, 0, .2);
+	border-radius: 15px; }
+
+nav.toggle li:last-child {
+	float: right; }
+
+
+.miss {
+	float: right;
+	opacity: 1;
+	padding: 5px 10px;
+	background: rgba(200, 0, 0, .2);
+	border-radius: 15px; }
+
+#tabs {
+	clear: both; }
+
+#down-downs {
+	clear: both;
+	position: absolute;
+	width: 100%;
+	opacity: .1; }
+
+#down-downs li {
+	font-size: 24px;
+	padding: 10px 20px; }
+
+#down-downs li span {
+	font-weight: bold; }
+
+#down-downs li:first-child {
+	background: -webkit-gradient(linear, 0 0, 0 100%, from(rgba(0, 0, 0, .2)), to(rgba(0, 0, 0, .4)));
+	border: solid rgba(0, 0, 0, .5);
+	border-width: 1px 0;
+	color: #FFFFFF;
+	text-shadow: #000000 0 1px 0; }
+
+
+#missing {
+	position: absolute;
+	right: 0;
+	clear: both;
+	padding: 0 0 10px;
+	text-align: right;
+	/*
+	border-bottom: 1px solid rgba(0, 0, 0, .25);
+	background: -webkit-gradient(linear, left top, left bottom, from(rgba(100%, 100%, 100%, 0)), to(rgba(100%, 100%, 100%, 1)));
+	*/ }
+	
+#missing li {
+	font-size: 150%;
+	font-weight: 200;
+	padding: 5px 20px; }
+
+
+.hide {
+	display: none; }

@@ -47,7 +47,7 @@ function checkinHasher(hasher) {
 }
 
 function updateStats() {
-	var nav = $('nav ul').empty();
+	var nav = $('#menu nav ul').empty();
 	var stats = hash.getStats();
 	if( stats.attendees )
 		nav.append('<li><span>' + stats.attendees + '</span> ' + pluralize(stats.attendees, 'Attendee') + '</li>');
