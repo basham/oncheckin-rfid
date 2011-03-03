@@ -38,6 +38,10 @@ function checkinHasher(hasher) {
 	
 	updateStats();
 	
+	loadHasher(hasher);
+}
+
+function loadHasher(hasher) {
 	var msg = '';
 	msg += '<strong>' + hasher.hashname + '</strong>';
 	msg += hasher.isAnniversary() ? '<p>You\'re celebrating your <mark>' + hasher.hashes + ' hash</mark>.</p>' : '<p>Today is your <mark>' + hasher.hashes + ' hash</mark>.</p>';
@@ -49,14 +53,31 @@ function checkinHasher(hasher) {
 function updateStats() {
 	var nav = $('#down-downs ul').empty();
 	var stats = hash.getStats();
-	if( stats.attendees )
-		nav.append('<li><span>' + stats.attendees + '</span> ' + pluralize(stats.attendees, 'Attendee') + '</li>');
 	if( stats.anniversaries )
 		nav.append('<li><span>' + stats.anniversaries + '</span> ' + pluralize(stats.anniversaries, 'Anniversary', 'Anniversaries') + '</li>');
 	if( stats.returners )
 		nav.append('<li><span>' + stats.returners + '</span> ' + pluralize(stats.returners, 'Returner') + '</li>');
 	if( stats.virgins )
 		nav.append('<li><span>' + stats.virgins + '</span> ' + pluralize(stats.virgins, 'Virgin') + '</li>');
+	
+	var open = $('#open-checkin').empty();
+	
+	for( var i = 0; i < hash.checkIns.length; i++ )
+		open.append( $('<li><span class="value">' + hash.checkIns[i].checkedIn.length + '</span> at ' + hash.checkIns[i].label() + '</li>').data('index', i) );
+
+	$('#open-checkin li').click(function() {
+		hash.openCheckIn( $(this).data('index') );
+		$('#console').empty();
+		var h = hash.getCurrentCheckedInHashers();
+		for( var i = 0; i < h.length; i++)
+			loadHasher(h[i]);
+		updateStats();
+	});
+	
+	$('#checkin-label .value').text(stats.checkedIn);
+	$('#checkin-label .label').text(hash.currentCheckIn().label());
+	
+	console.log(hash.getMissing());
 }
 
 function pluralize(value, singular, plural) {
@@ -125,6 +146,8 @@ function feedback(msg) {
 $(document).ready(function() {
 
 	$('#overlay, #assign, #feedback').hide();
+
+	updateStats();
 
 	$(this).keyup(function(event) {
 		switch( event.keyCode ) {
@@ -206,8 +229,14 @@ $(document).ready(function() {
 		closeModal();
 		return false;
 	});
-
+	
+	$('#new-checkin li').click(function() {
+		hash.newCheckIn( $(this).attr('id') );
+		$('#console').empty();
+		updateStats();
+	});
 });
+
 
 var latesthash = '20110219';
 
@@ -254,9 +283,11 @@ function Hash(options) {
 	this.attendees = options.attendees || [];
 	this.hashers = []; // Temporary storage of hasher data
 	this.checkIns = options.checkIns || [ new CheckIn() ];
+	this.current = options.currentCheckIn || 0;
 	
 	this.newCheckIn = function(type) {
 		this.checkIns.push( new CheckIn({ type: type }) );
+		this.openCheckIn(this.checkIns.length - 1);
 	};
 	
 	this.loadCheckIns = function(checkIns) {
@@ -265,8 +296,12 @@ function Hash(options) {
 	//	this.checkIns
 	};
 	
+	this.openCheckIn = function(index) {
+		this.current = index;
+	};
+	
 	this.checkIn = function(hasher) {
-		if( this.latestCheckIn().checkIn(hasher) ) {
+		if( this.currentCheckIn().checkIn(hasher) ) {
 			for( var i = 0; i < this.attendees; i++ )
 				if( this.attendees[i] == hasher.id ) // The hasher has checked in at least once at this hash
 					return true;
@@ -280,16 +315,51 @@ function Hash(options) {
 		return false;
 	};
 	
-	this.latestCheckIn = function() {
+	this.currentCheckIn = function() {
+		return this.checkIns[ this.current ];
+		/*
 		if( this.checkIns.length )
 			return this.checkIns[ this.checkIns.length - 1 ];
 		return null;
+		*/
 	};
 	
 	this.getAttendees = function() {
 		return this.attendees;
 	};
+	
+	this.getCheckedIn = function() {
+		return this.currentCheckIn().checkedIn;
+	};
+	
+	this.getCurrentCheckedInHashers = function() {
+		return this.currentCheckIn().hashers;
+	};
 
+	this.getMissing = function() {
+		
+		if( this.checkIns.length <= 1 )
+			return [];
+		
+		var a = [];	
+		var h = this.getCheckedIn();
+console.log( this.attendees.length + ' | ' + h.length );
+		for( var i = 0; i < h.length; i++ )
+			if( $.inArray( h[i], this.attendees ) < 0 )
+				a.push( h[i] );
+		return a;
+		
+		/*
+		var a = [];	
+		var h = this.getCurrentCheckedInHashers();
+
+		for( var i = 0; i < h.length; i++ )
+			if( $.inArray( h[i], this.hashers ) < 0 )
+				a.push( h[i] );
+		return a;
+		*/
+	};
+	
 	this.getAnniversaries = function() {
 		var a = [];
 		for( var i = 0; i < this.hashers.length; i++ )
@@ -325,6 +395,7 @@ function Hash(options) {
 	this.getStats = function() {
 		return {
 			attendees: this.getAttendees().length,
+			checkedIn: this.getCheckedIn().length,
 			anniversaries: this.getAnniversaries().length,
 			returners: this.getReturners().length,
 			virgins: this.getVirgins().length };
@@ -335,11 +406,13 @@ function CheckIn(options) {
 	options = options || {};
 	this.type = options.type || 'signin';
 	this.checkedIn = options.checkedIn || [];
+	this.hashers = [];
 	
 	this.checkIn = function(hasher) {
 		if( this.isCheckedIn(hasher) )
 			return false;
 		this.checkedIn.push( hasher.id );
+		this.hashers.push( hasher );
 		return true;
 	};
 	

@@ -43,21 +43,41 @@
 <section id="menu">
 	<nav>
 	<ul>
-		<li><span>34</span> at Beer Check<span class="miss hide">6 Missing</span></li>
+		<li id="checkin-label"><span class="value">&nbsp;</span> at <span class="label"></span></li>
 		<li id="hash-title">Hash of the Titans</li>
 	</ul>
 	<div class="clear"></div>
 	</nav>
 </section>
 
-<nav id="down-downs" class="menu hide">
-	<h3>Down-Downs</h3>
-	<ul><li><span>6</span> Attendees</li><li><span>2</span> Anniversaries</li><li><span>3</span> Returners</li><li><span>2</span> Virgins</li></ul>
+<nav id="checkin-options" class="menu">
+	<h3>Open check-in</h3>
+	<ul id="open-checkin">
+		<li id="beercheck">Beer Check</li>
+		<li id="onin">On-In</li>
+		<li id="onafter">On-After</li>
+	</ul>
+	<h3>New check-in</h3>
+	<ul id="new-checkin">
+		<li id="beercheck">Beer Check</li>
+		<li id="onin">On-In</li>
+		<li id="onafter">On-After</li>
+	</ul>
 </nav>
 
-<nav id="missing" class="menu emptyx">
+<nav id="down-downs" class="menu hidex">
+	<h3>Down-Downs</h3>
+	<ul>
+		<!--
+		<li><span>6</span> Attendees</li><li><span>2</span> Anniversaries</li><li><span>3</span> Returners</li><li><span>2</span> Virgins</li>
+		-->
+	</ul>
+</nav>
+
+<nav id="missing" class="menu emptyx hide">
 	<h3><span>6 missing</span></h3>
 	<ul>
+		<!--
 		<li>Just Chris</li>
 		<li>Just Rob</li>
 		<li>Son of Gucci</li>
@@ -66,11 +86,16 @@
 		<li>Dowelrod</li>
 		<li>Just Chris</li>
 		<li>Just Rob</li>
+		-->
 	</ul>
 </nav>
 
 <section id="body">
-	<ol id="console"><li><strong>Scooby I'd Do Her</strong><p>Today is your <mark>18 hash</mark>.</p><p>You haven't come since <mark>1/22/11</mark>.</p></li><li><strong>Just Just</strong><p>Today is your <mark>2 hash</mark>.</p></li><li><strong>Just Ron</strong><p>Today is your <mark>1 hash</mark>.</p></li><li><strong>Transexual Mustache Inseminator</strong><p>You're celebrating your <mark>10 hash</mark>.</p><p>You haven't come since <mark>12/21/10</mark>.</p></li></ol>
+	<ul id="console">
+		<!--
+		<li><strong>Scooby I'd Do Her</strong><p>Today is your <mark>18 hash</mark>.</p><p>You haven't come since <mark>1/22/11</mark>.</p></li><li><strong>Just Just</strong><p>Today is your <mark>2 hash</mark>.</p></li><li><strong>Just Ron</strong><p>Today is your <mark>1 hash</mark>.</p></li><li><strong>Transexual Mustache Inseminator</strong><p>You're celebrating your <mark>10 hash</mark>.</p><p>You haven't come since <mark>12/21/10</mark>.</p></li>
+		-->
+	</ul>
 </section>
 	
 </body>
