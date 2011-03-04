@@ -4,6 +4,9 @@ socket.connect()
 .on('message', function(obj) {
 	if( 'action' in obj ) {
 		switch( obj.action ) {
+			case 'loadHash':
+				loadHash(obj.data);
+				break;
 			case 'startScanning':
 				feedback('Start scanning tags.');
 				break;
@@ -30,6 +33,12 @@ socket.connect()
 	}
 })
 .on('disconnect', function(){ feedback('Disconnected from server.') });
+
+function loadHash(data) {
+	hash = new Hash(data);
+	updateStats();
+	//console.log(hash)
+}
 
 function checkinHasher(hasher) {
 	closeModal();
@@ -315,19 +324,24 @@ var hash = {
 };
 */
 var hash = new Hash();
-
+//var hash;
 function Hash(options) {
 	options = options || {};
 	this.title = options.title || 'Rehash of the Titans';
 	this.attendees = options.attendees || [];
-	this.hashers = []; // Temporary storage of hasher data
-	this.checkIns = options.checkIns || [ new CheckIn() ];
+	this.hashers = toHashers(options.hashers); // Temporary storage of hasher data
+	this.checkIns = toCheckIns(options.checkIns);
 	this.current = options.currentCheckIn || 0;
 	this.lateCheckIns = [];
+	
+	this.save = function() {
+		socket.send({ action: 'saveHash', data: this });
+	};
 	
 	this.newCheckIn = function(type) {
 		this.checkIns.push( new CheckIn({ type: type }) );
 		this.openCheckIn(this.checkIns.length - 1);
+		this.save();
 	};
 	
 	this.loadCheckIns = function(checkIns) {
@@ -351,6 +365,7 @@ function Hash(options) {
 				feedback('You\'re signing in late, ' + hasher.hashname + '.');
 				this.lateCheckIns.push( hasher );
 			}
+			this.save();
 			return true;
 		}
 		feedback('You\'re already checked in, ' + hasher.hashname + '.');
@@ -447,7 +462,7 @@ function CheckIn(options) {
 	options = options || {};
 	this.type = options.type || 'signin';
 	this.checkedIn = options.checkedIn || [];
-	this.hashers = [];
+	this.hashers = toHashers(options.hashers);
 	
 	this.checkIn = function(hasher) {
 		if( this.isCheckedIn(hasher) )
@@ -478,4 +493,22 @@ function CheckIn(options) {
 				return 'On after';
 		}
 	};
+}
+
+function toHashers(data) {
+	var a = [];
+	data = new Array(data);
+	for( var i = 0; i < data.length; i++ )
+		a.push( new Hasher(data[i]) );
+	return a;
+}
+
+function toCheckIns(data) {
+	var a = [];
+	data = new Array(data);
+	for( var i = 0; i < data.length; i++ )
+		a.push( new CheckIn(data[i]) );
+	if( !a.length ) // Nothing to convert. Load default.
+		a = [ new CheckIn() ];
+	return a;
 }

@@ -145,6 +145,14 @@ fs.readFile('data/roster.json', function (err, data) {
 });
 
 
+var hashEvent = {};
+
+fs.readFile('data/hash.json', function (err, data) {
+	if (err) throw err;
+	hashEvent = JSON.parse(data);
+});
+
+
 var rfid = new RFID();
 rfid.readAvailable(['/dev/ttyUSB0', '/dev/cu.usbserial-A600exqM']);
 
@@ -218,6 +226,14 @@ function saveRFIDs() {
 	});
 }
 
+function saveHash(data) {
+	hashEvent = data;
+	fs.writeFile('data/hash.json', JSON.stringify(data), function (err) {
+	  if (err) throw err;
+	  sys.puts('Saved Hash.');
+	});
+}
+
 
 var express = require('express');
 var app = express.createServer(); 
@@ -241,14 +257,15 @@ var socket = io.listen(app);
 
 socket.on('connection', function(client){ 
 	
-	rfid.sendAll();
+	//rfid.sendAll();
+	socket.broadcast({ action: 'loadHash', data: hashEvent });
 	
 	client.on('message', function(message) {
 		sys.puts( 'ACTION: ' + message.action );
 		switch( message.action ) {
 			case 'clear':
-				rfid.ids = [];
-				rfid.sendAll();
+				//rfid.ids = [];
+				//rfid.sendAll();
 				break;
 			case 'autoHasher':
 				socket.broadcast({ action: 'autoHasher', data: autocompleteHasher(message.data, message.limit) });
@@ -258,6 +275,9 @@ socket.on('connection', function(client){
 				break;
 			case 'register':
 				socket.broadcast({ action: 'register', data: register(message.data.hasher, message.data.rfid) });
+				break;
+			case 'saveHash':
+				saveHash(message.data);
 				break;
 		}
 	})
