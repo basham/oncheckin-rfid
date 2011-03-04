@@ -55,17 +55,25 @@ function updateStats() {
 	var stats = hash.getStats();
 	if( stats.anniversaries )
 		nav.append('<li><span>' + stats.anniversaries + '</span> ' + pluralize(stats.anniversaries, 'Anniversary', 'Anniversaries') + '</li>');
+	if( stats.lateCheckIns )
+		nav.append('<li><span>' + stats.lateCheckIns + '</span> ' + pluralize(stats.lateCheckIns, 'Late Sign-in') + '</li>');
 	if( stats.returners )
 		nav.append('<li><span>' + stats.returners + '</span> ' + pluralize(stats.returners, 'Returner') + '</li>');
 	if( stats.virgins )
 		nav.append('<li><span>' + stats.virgins + '</span> ' + pluralize(stats.virgins, 'Virgin') + '</li>');
 	
+	$('#hash-title .value').text(stats.attendees);
+	
 	var open = $('#open-checkin').empty();
 	
 	for( var i = 0; i < hash.checkIns.length; i++ )
-		open.append( $('<li><span class="value">' + hash.checkIns[i].checkedIn.length + '</span> at ' + hash.checkIns[i].label() + '</li>').data('index', i) );
+		open.append(
+			$('<li><span class="value">' + hash.checkIns[i].checkedIn.length + '</span> at ' + hash.checkIns[i].label() + '</li>')
+			.data('index', i)
+			.addClass( hash.current == i ? 'selected' : '' ) );
 
 	$('#open-checkin li').click(function() {
+		$('#checkin-options').hide();
 		hash.openCheckIn( $(this).data('index') );
 		$('#console').empty();
 		var h = hash.getCurrentCheckedInHashers();
@@ -77,7 +85,18 @@ function updateStats() {
 	$('#checkin-label .value').text(stats.checkedIn);
 	$('#checkin-label .label').text(hash.currentCheckIn().label());
 	
-	console.log(hash.getMissing());
+	var missing = hash.getMissing();
+
+	if( missing.length && hash.isCheckInActive() ) {
+		$('#missing').show();
+		$('#missing .value').text(missing.length);
+		var miss = $('#missing ul').empty();
+		for( var i = 0; i < missing.length; i++ )
+			miss.append('<li>' + missing[i].hashname + '</li>');
+	}
+	else
+		$('#missing').hide();
+		
 }
 
 function pluralize(value, singular, plural) {
@@ -145,7 +164,7 @@ function feedback(msg) {
 
 $(document).ready(function() {
 
-	$('#overlay, #assign, #feedback').hide();
+	$('#overlay, #assign, #feedback, #checkin-options').hide();
 
 	updateStats();
 
@@ -229,12 +248,25 @@ $(document).ready(function() {
 		closeModal();
 		return false;
 	});
+
+	$('#checkin-label').click(function() {
+		$('#checkin-options').toggle();
+	});
 	
+	$('#new-checkin').click(function() {
+		$('#checkin-options').hide();
+		hash.newCheckIn('checkin');
+		$('#console').empty();
+		updateStats();
+	});
+	
+	/*
 	$('#new-checkin li').click(function() {
 		hash.newCheckIn( $(this).attr('id') );
 		$('#console').empty();
 		updateStats();
 	});
+	*/
 });
 
 
@@ -284,6 +316,7 @@ function Hash(options) {
 	this.hashers = []; // Temporary storage of hasher data
 	this.checkIns = options.checkIns || [ new CheckIn() ];
 	this.current = options.currentCheckIn || 0;
+	this.lateCheckIns = [];
 	
 	this.newCheckIn = function(type) {
 		this.checkIns.push( new CheckIn({ type: type }) );
@@ -302,13 +335,15 @@ function Hash(options) {
 	
 	this.checkIn = function(hasher) {
 		if( this.currentCheckIn().checkIn(hasher) ) {
-			for( var i = 0; i < this.attendees; i++ )
+			for( var i = 0; i < this.attendees.length; i++ )
 				if( this.attendees[i] == hasher.id ) // The hasher has checked in at least once at this hash
 					return true;
 			this.attendees.push( hasher.id ); // This is the hasher's first check in for this hash
 			this.hashers.push( hasher );
-			if( this.checkIns.length > 1 )
+			if( this.checkIns.length > 1 ) {
 				feedback('You\'re signing in late, ' + hasher.hashname + '.');
+				this.lateCheckIns.push( hasher );
+			}
 			return true;
 		}
 		feedback('You\'re already checked in, ' + hasher.hashname + '.');
@@ -324,6 +359,10 @@ function Hash(options) {
 		*/
 	};
 	
+	this.isCheckInActive = function() {
+		return this.current == this.checkIns.length - 1;
+	};
+	
 	this.getAttendees = function() {
 		return this.attendees;
 	};
@@ -337,27 +376,16 @@ function Hash(options) {
 	};
 
 	this.getMissing = function() {
+		var a = [];
 		
 		if( this.checkIns.length <= 1 )
-			return [];
+			return a;
 		
-		var a = [];	
-		var h = this.getCheckedIn();
-console.log( this.attendees.length + ' | ' + h.length );
-		for( var i = 0; i < h.length; i++ )
-			if( $.inArray( h[i], this.attendees ) < 0 )
-				a.push( h[i] );
-		return a;
-		
-		/*
-		var a = [];	
-		var h = this.getCurrentCheckedInHashers();
+		for( var i = 0; i < this.hashers.length; i++ )
+			if( $.inArray( this.hashers[i].id, this.getCheckedIn() ) < 0 )
+				a.push( this.hashers[i] );
 
-		for( var i = 0; i < h.length; i++ )
-			if( $.inArray( h[i], this.hashers ) < 0 )
-				a.push( h[i] );
 		return a;
-		*/
 	};
 	
 	this.getAnniversaries = function() {
@@ -368,6 +396,10 @@ console.log( this.attendees.length + ' | ' + h.length );
 		return a;
 	};
 
+	this.getLateCheckIns = function() {
+		return this.lateCheckIns;
+	};
+	
 	this.getNamings = function() {
 		var a = [];
 		for( var i = 0; i < this.hashers.length; i++ )
@@ -397,6 +429,7 @@ console.log( this.attendees.length + ' | ' + h.length );
 			attendees: this.getAttendees().length,
 			checkedIn: this.getCheckedIn().length,
 			anniversaries: this.getAnniversaries().length,
+			lateCheckIns: this.getLateCheckIns().length,
 			returners: this.getReturners().length,
 			virgins: this.getVirgins().length };
 	};
@@ -426,7 +459,9 @@ function CheckIn(options) {
 	this.label = function() {
 		switch( this.type ) {
 			case 'signin':
-				return 'Sign in';
+				return 'Sign-in';
+			case 'checkin':
+				return 'Check-in';
 			case 'beercheck':
 				return 'Beer Check';
 			case 'onin':

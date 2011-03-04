@@ -231,7 +231,7 @@ nav {
 	margin-left: 310px;
 	border-radius: 0 0 0 10px; }
 
-#menu li:first-child {
+#menu li {
 	float: left; }
 	
 #menu li:last-child {
@@ -266,15 +266,27 @@ nav.menu li {
 	padding: 5px 20px; }
 
 
-#checkin-options {
-	bottom: 0;
-	width: auto;
-	border-radius: 0 10px 0 0; }
 
+
+#checkin-options {
+	top: 45px;
+	left: 320px;
+	width: 180px;
+	border-radius: 0 0 10px 10px; }
+
+#checkin-options li {
+	opacity: .25; }
+
+#checkin-options li.selected {
+	opacity: 1; }
+		
 #down-downs {
 	min-width: 200px;
 	color: rgba(0, 0, 0, 1);
-	width: auto; }
+	width: auto;
+	right: 0;
+	bottom: 0;
+	border-radius: 10px 0 0; }
 
 #down-downs li {
 	font-weight: 200;
