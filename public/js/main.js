@@ -44,7 +44,7 @@ function checkinHasher(hasher) {
 function loadHasher(hasher) {
 	var msg = '';
 	msg += '<strong>' + hasher.hashname + '</strong>';
-	msg += hasher.isAnniversary() ? '<p>You\'re celebrating your <mark>' + hasher.hashes + ' hash</mark>.</p>' : '<p>Today is your <mark>' + hasher.hashes + ' hash</mark>.</p>';
+	msg += hasher.isAnniversary() ? '<p>You\'re celebrating your <mark>' + hasher.hashes + ' hash</mark>.</p>' : '<p>Today is your <mark>' + ( hasher.hashes == 1 ? 'virgin' : hasher.hashes ) + ' hash</mark>.</p>';
 	msg += hasher.isReturner() ? '<p>You haven\'t come since <mark>' + hasher.lasthash + '</mark>.</p>' : '';
 	msg += hasher.isNaming() ? '<p>Today is your <mark>naming</mark>.</p>' : '';
 	$('#console').prepend('<li>' + msg + '</li>');
@@ -57,10 +57,14 @@ function updateStats() {
 		nav.append('<li><span>' + stats.anniversaries + '</span> ' + pluralize(stats.anniversaries, 'Anniversary', 'Anniversaries') + '</li>');
 	if( stats.lateCheckIns )
 		nav.append('<li><span>' + stats.lateCheckIns + '</span> ' + pluralize(stats.lateCheckIns, 'Late Sign-in') + '</li>');
+	if( stats.namings )
+		nav.append('<li><span>' + stats.namings + '</span> ' + pluralize(stats.namings, 'Naming') + '</li>');
 	if( stats.returners )
 		nav.append('<li><span>' + stats.returners + '</span> ' + pluralize(stats.returners, 'Returner') + '</li>');
 	if( stats.virgins )
 		nav.append('<li><span>' + stats.virgins + '</span> ' + pluralize(stats.virgins, 'Virgin') + '</li>');
+	
+	// Add .social class to down-down <li> if ( value / attendees > .5 )
 	
 	$('#hash-title .value').text(stats.attendees);
 	
@@ -286,7 +290,7 @@ function Hasher(options) {
 		return ( this.hashes % 5 == 0 && this.hashes > 0 ) || this.hashes == 69;
 	};
 	this.isNaming = function() {
-		return this.hashes > 0 && this.hashname.length == 0;
+		return this.hashes > 5 && this.hashname == ('Just ' + this.firstname);
 	};
 	this.isReturner = function() {
 		return this.lasthash < latesthash;
@@ -430,6 +434,7 @@ function Hash(options) {
 			checkedIn: this.getCheckedIn().length,
 			anniversaries: this.getAnniversaries().length,
 			lateCheckIns: this.getLateCheckIns().length,
+			namings: this.getNamings().length,
 			returners: this.getReturners().length,
 			virgins: this.getVirgins().length };
 	};

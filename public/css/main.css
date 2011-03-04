@@ -286,7 +286,8 @@ nav.menu li {
 	width: auto;
 	right: 0;
 	bottom: 0;
-	border-radius: 10px 0 0; }
+	border-radius: 10px 0 0;
+	border-width: 0; }
 
 #down-downs li {
 	font-weight: 200;
