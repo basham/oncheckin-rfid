@@ -4,6 +4,9 @@ socket.connect()
 .on('message', function(obj) {
 	if( 'action' in obj ) {
 		switch( obj.action ) {
+			case 'startScanning':
+				feedback('Start scanning tags.');
+				break;
 			case 'assign': // Unassigned RFID is scanned
 				openAssignModal(obj.data);
 				break;

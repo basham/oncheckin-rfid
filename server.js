@@ -43,6 +43,7 @@ function RFID(serial) {
 		
 		.on('open', function(fd) {
 			sys.puts('Begin scanning RFID tags.');
+			socket.broadcast({ action: 'startScanning' });
 		})
 
 		.on('end', function() {
