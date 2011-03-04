@@ -8,18 +8,24 @@ require('hash');
 function RFID(serial) {
 	
 	this.serial = serial;
+	this.serials = [];
 	
 	// Temporarily stores the RFID id as it reconstructs from the stream.
 	this._id = '';
 	
 	this.ids = [];
 	
+	this._autoReconnectId;
+	
 	this.readAvailable = function(serials) { // Tests suggested streams and chooses first available one for read
 		// stats.isCharacterDevice() == true
-
+		serials = ( serials && serials.length ) ? serials : this.serials;
+		sys.puts('Attempting read.');
 		for( var i = 0; i < serials.length; i++ ) {
 		    try {
 		        var stats = fs.lstatSync(serials[i]);
+				this.serials = serials;
+				clearInterval( this._autoReconnectId );
 		        sys.puts('Opening serial stream ' + serials[i]);
 				this.read( serials[i] );
 				return true;
@@ -31,6 +37,7 @@ function RFID(serial) {
 	
 	this.read = function(serial) {
 		this.serial = serial;
+		var o = this;
 		// Simplifies restruction of stream if one bit comes at a time.
 		fs.createReadStream(serial, { bufferSize: 1 })
 		
@@ -43,18 +50,28 @@ function RFID(serial) {
 		})
 
 		.on('close', function() {
+			//fd.close();
 			//this.read(this.serial);
 			sys.puts('Closing stream.');
+			o.autoReconnect();
 		})
 
 		.on('error', function(error) {
 			//this.read(this.serial);
 			sys.debug(error);
+			o.autoReconnect();
 		})
 		
 		.on('data', function(chunk) {
-			rfid.reconstruct(chunk);
+			o.reconstruct(chunk);
 		});
+	};
+	
+	this.autoReconnect = function() {
+		var sec = 5;
+		sys.puts('Attempting to reconnect to stream every ' + sec + ' seconds.');
+		var o = this;
+		this._autoReconnectId = setInterval(function() { o.readAvailable() }, sec * 1000);
 	};
 	
 	this.reconstruct = function(chunk) {
@@ -129,6 +146,7 @@ fs.readFile('data/roster.json', function (err, data) {
 
 var rfid = new RFID();
 rfid.readAvailable(['/dev/ttyUSB0', '/dev/cu.usbserial-A600exqM']);
+
 
 rfid.send = function(id) {
 	//sys.puts(this.find(id));
