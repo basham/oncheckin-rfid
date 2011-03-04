@@ -14,6 +14,21 @@ function RFID(serial) {
 	
 	this.ids = [];
 	
+	this.readAvailable = function(serials) { // Tests suggested streams and chooses first available one for read
+		// stats.isCharacterDevice() == true
+
+		for( var i = 0; i < serials.length; i++ ) {
+		    try {
+		        var stats = fs.lstatSync(serials[i]);
+		        sys.puts('Opening serial stream ' + serials[i]);
+				this.read( serials[i] );
+				return true;
+		    }
+		    catch(e) { }
+		}
+		sys.puts('Failed to read any valid serial stream. ' + serials.length + ' attempted.');
+	};
+	
 	this.read = function(serial) {
 		this.serial = serial;
 		// Simplifies restruction of stream if one bit comes at a time.
@@ -113,7 +128,7 @@ fs.readFile('data/roster.json', function (err, data) {
 
 
 var rfid = new RFID();
-rfid.read('/dev/cu.usbserial-A600exqM');
+rfid.readAvailable(['/dev/ttyUSB0', '/dev/cu.usbserial-A600exqM']);
 
 rfid.send = function(id) {
 	//sys.puts(this.find(id));
