@@ -160,11 +160,19 @@ function compareSerializedHashers(a, b) {
 }
 
 function autoAssign() {
+	if( $('#assign').is(':hidden') ) // Only assign if the modal is active
+		return;
 	var rfid = $('#rfid').text();
 	if( $('.auto .selected').length )
 		socket.send({ action: 'assignRegistered', data: { id: $('.auto .selected').attr('id'), rfid: rfid } });
-	else
-		socket.send({ action: 'register', data: { hasher: serializeHasher(), rfid: rfid } });
+	else {
+		var s = serializeHasher();
+		if( s.firstname == '' || s.lastname == '' ) {
+			feedback('The full mother-given name must be supplied.');
+			return;
+		}
+		socket.send({ action: 'register', data: { hasher: s, rfid: rfid } });
+	}
 }
 
 function feedback(msg) {
@@ -335,7 +343,7 @@ function Hash(options) {
 	this.lateCheckIns = [];
 	
 	this.save = function() {
-		socket.send({ action: 'saveHash', data: this });
+		//socket.send({ action: 'saveHash', data: this });
 	};
 	
 	this.newCheckIn = function(type) {
