@@ -81,19 +81,6 @@ function updateStats() {
 
 	// Add .social class to down-down <li> if ( value / attendees > .5 )
 
-	$('#down-downs li').click(function() {
-		$(this).toggleClass('selected').siblings().removeClass('selected');
-		$('#body section').hide();
-		var c = $(this).clone().removeClass('selected').attr('class'); // Capture the relavant class
-		if( $(this).hasClass('selected') ) {
-			updateDownDowns();
-			$('#' + c).show();
-			$('#missing').hide();
-		}
-		else {
-			$('#checkin, #missing').show();
-		}
-	});
 	
 	$('#hash-title .value').text(stats.attendees);
 	
@@ -124,7 +111,24 @@ function updateStats() {
 			miss.append('<li>' + missing[i].hashname + '</li>');
 	}
 	else
-		$('#missing').hide();		
+		$('#missing').hide();
+
+
+	$('#down-downs li').click(function() {
+		$(this).toggleClass('selected').siblings().removeClass('selected');
+		$('#body section').hide();
+		var c = $(this).clone().removeClass('selected').attr('class'); // Capture the relavant class
+		if( $(this).hasClass('selected') ) {
+			updateDownDowns();
+			$('#' + c).show();
+			$('#missing').hide();
+		}
+		else {
+			$('#checkin').show();
+			if( missing.length && hash.isCheckInActive() ) 
+				$('#missing').show();
+		}
+	});
 }
 
 function updateDownDowns() {
@@ -340,7 +344,7 @@ $(document).ready(function() {
 });
 
 
-var latesthash = '20110219';
+var latesthash = '2/19/11';
 
 function Hasher(options) {
 	options = options || {};
@@ -381,7 +385,7 @@ var hash = new Hash();
 //var hash;
 function Hash(options) {
 	options = options || {};
-	this.title = options.title || 'Rehash of the Titans';
+	this.title = options.title || 'Hashi Gras Hash';
 	this.attendees = options.attendees || [];
 	this.hashers = toHashers(options.hashers); // Temporary storage of hasher data
 	this.checkIns = toCheckIns(options.checkIns);
