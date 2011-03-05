@@ -36,8 +36,8 @@ socket.connect()
 
 function loadHash(data) {
 	hash = new Hash(data);
-	updateStats();
-	//console.log(hash)
+	loadCheckIn();
+	console.log(hash);
 }
 
 function checkinHasher(hasher) {
@@ -91,11 +91,7 @@ function updateStats() {
 	$('#open-checkin li').click(function() {
 		$('#checkin-options').hide();
 		hash.openCheckIn( $(this).data('index') );
-		$('#console').empty();
-		var h = hash.getCurrentCheckedInHashers();
-		for( var i = 0; i < h.length; i++)
-			loadHasher(h[i]);
-		updateStats();
+		loadCheckIn();
 	});
 	
 	$('#checkin-label .value').text(stats.checkedIn);
@@ -111,8 +107,15 @@ function updateStats() {
 			miss.append('<li>' + missing[i].hashname + '</li>');
 	}
 	else
-		$('#missing').hide();
-		
+		$('#missing').hide();		
+}
+
+function loadCheckIn() {
+	$('#console').empty();
+	var h = hash.getCurrentCheckedInHashers();
+	for( var i = 0; i < h.length; i++)
+		loadHasher(h[i]);
+	updateStats();
 }
 
 function pluralize(value, singular, plural) {
@@ -339,11 +342,11 @@ function Hash(options) {
 	this.attendees = options.attendees || [];
 	this.hashers = toHashers(options.hashers); // Temporary storage of hasher data
 	this.checkIns = toCheckIns(options.checkIns);
-	this.current = options.currentCheckIn || 0;
-	this.lateCheckIns = [];
+	this.current = options.current || 0;
+	this.lateCheckIns = toHashers(options.lateCheckIns);
 	
 	this.save = function() {
-		//socket.send({ action: 'saveHash', data: this });
+		socket.send({ action: 'saveHash', data: this });
 	};
 	
 	this.newCheckIn = function(type) {
@@ -360,6 +363,7 @@ function Hash(options) {
 	
 	this.openCheckIn = function(index) {
 		this.current = index;
+		this.save();
 	};
 	
 	this.checkIn = function(hasher) {
@@ -505,7 +509,8 @@ function CheckIn(options) {
 
 function toHashers(data) {
 	var a = [];
-	data = new Array(data);
+	data = data || [];
+	//data = new Array(data);
 	for( var i = 0; i < data.length; i++ )
 		a.push( new Hasher(data[i]) );
 	return a;
@@ -513,7 +518,8 @@ function toHashers(data) {
 
 function toCheckIns(data) {
 	var a = [];
-	data = new Array(data);
+	data = data || [];
+	//data = new Array(data);
 	for( var i = 0; i < data.length; i++ )
 		a.push( new CheckIn(data[i]) );
 	if( !a.length ) // Nothing to convert. Load default.
