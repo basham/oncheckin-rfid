@@ -1,7 +1,7 @@
 var sys = require('sys');
 var fs = require('fs');
 var $ = require('jquery'); 
-var csv = require('ya-csv');
+//var csv = require('ya-csv');
 require('joose');
 require('joosex-namespace-depended');
 require('hash');
@@ -233,11 +233,22 @@ function saveHash(data) {
 	  if (err) throw err;
 	  sys.puts('Saved Hash.');
 	});
+	/*
 	var writer = new csv.createCsvFileWriter('data/attendees.csv');
 	for( var i = 0; i < data.hashers.length; i++ ) {
 		var h = data.hashers[i];
 		writer.writeRecord( [ h.lastname, h.firstname, h.hashname ] );
 	}
+	*/
+	var d = '';
+	for( var i = 0; i < data.hashers.length; i++ ) {
+		var h = data.hashers[i];
+		d += '"' + h.lastname + '","' + h.firstname + '","' + h.hashname + '"\n';
+	}
+	fs.writeFile('data/attendees.csv', d, function (err) {
+		if (err) throw err;
+		sys.puts('Attendees CSV saved.');
+	});
 }
 
 
