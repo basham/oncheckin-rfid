@@ -37,7 +37,6 @@ socket.connect()
 function loadHash(data) {
 	hash = new Hash(data);
 	loadCheckIn();
-	console.log(hash);
 }
 
 function checkinHasher(hasher) {
@@ -54,29 +53,47 @@ function checkinHasher(hasher) {
 }
 
 function loadHasher(hasher) {
+	$('#console').prepend( listHasher(hasher) );
+}
+
+function listHasher(hasher) {
 	var msg = '';
 	msg += '<strong>' + hasher.hashname + '</strong>';
 	msg += hasher.isAnniversary() ? '<p>You\'re celebrating your <mark>' + hasher.hashes + ' hash</mark>.</p>' : '<p>Today is your <mark>' + ( hasher.hashes == 1 ? 'virgin' : hasher.hashes ) + ' hash</mark>.</p>';
 	msg += hasher.isReturner() ? '<p>You haven\'t come since <mark>' + hasher.lasthash + '</mark>.</p>' : '';
 	msg += hasher.isNaming() ? '<p>Today is your <mark>naming</mark>.</p>' : '';
-	$('#console').prepend('<li>' + msg + '</li>');
+	return '<li>' + msg + '</li>';
 }
 
 function updateStats() {
 	var nav = $('#down-downs ul').empty();
 	var stats = hash.getStats();
 	if( stats.anniversaries )
-		nav.append('<li><span>' + stats.anniversaries + '</span> ' + pluralize(stats.anniversaries, 'Anniversary', 'Anniversaries') + '</li>');
+		nav.append('<li class="anniversaries"><span>' + stats.anniversaries + '</span> ' + pluralize(stats.anniversaries, 'Anniversary', 'Anniversaries') + '</li>');
 	if( stats.lateCheckIns )
-		nav.append('<li><span>' + stats.lateCheckIns + '</span> ' + pluralize(stats.lateCheckIns, 'Late Sign-in') + '</li>');
+		nav.append('<li class="latecheckins"><span>' + stats.lateCheckIns + '</span> ' + pluralize(stats.lateCheckIns, 'Late Sign-in') + '</li>');
 	if( stats.namings )
-		nav.append('<li><span>' + stats.namings + '</span> ' + pluralize(stats.namings, 'Naming') + '</li>');
+		nav.append('<li class="namings"><span>' + stats.namings + '</span> ' + pluralize(stats.namings, 'Naming') + '</li>');
 	if( stats.returners )
-		nav.append('<li><span>' + stats.returners + '</span> ' + pluralize(stats.returners, 'Returner') + '</li>');
+		nav.append('<li class="returners"><span>' + stats.returners + '</span> ' + pluralize(stats.returners, 'Returner') + '</li>');
 	if( stats.virgins )
-		nav.append('<li><span>' + stats.virgins + '</span> ' + pluralize(stats.virgins, 'Virgin') + '</li>');
-	
+		nav.append('<li class="virgins"><span>' + stats.virgins + '</span> ' + pluralize(stats.virgins, 'Virgin') + '</li>');
+
 	// Add .social class to down-down <li> if ( value / attendees > .5 )
+
+	$('#down-downs li').click(function() {
+		$(this).toggleClass('selected').siblings().removeClass('selected');
+		$('#body section').hide();
+		var c = $(this).clone().removeClass('selected').attr('class'); // Capture the relavant class
+		if( $(this).hasClass('selected') ) {
+			updateDownDowns();
+			$('#' + c).show();
+			$('#missing').hide();
+		}
+		else {
+			$('#checkin, #missing').show();
+		}
+	});
 	
 	$('#hash-title .value').text(stats.attendees);
 	
@@ -108,6 +125,32 @@ function updateStats() {
 	}
 	else
 		$('#missing').hide();		
+}
+
+function updateDownDowns() {
+	var n = hash.getNamings();
+	var a = hash.getAnniversaries();
+	var l = hash.getLateCheckIns();
+	var r = hash.getReturners();
+	var v = hash.getVirgins();
+	var i = 0;
+	
+	$('#anniversaries ul, #namings ul, #latecheckins ul, #returners ul, #virgins ul').empty();
+
+	for( i = 0; i < a.length; i++ )
+		$('#anniversaries ul').prepend( '<li>' + a[i].hashname + ' &bull; <mark>' + a[i].hashes + '</mark></li>' );
+		
+	for( i = 0; i < n.length; i++ )
+		$('#namings ul').prepend( listHasher(n[i]) );
+
+	for( i = 0; i < l.length; i++ )
+		$('#latecheckins ul').prepend( listHasher(l[i]) );
+
+	for( i = 0; i < r.length; i++ )
+		$('#returners ul').prepend( '<li>' + r[i].hashname + ' &bull; <mark>' + r[i].lasthash + '</mark></li>' );
+		
+	for( i = 0; i < v.length; i++ )
+		$('#virgins ul').prepend( listHasher(v[i]) );
 }
 
 function loadCheckIn() {
@@ -191,8 +234,8 @@ function feedback(msg) {
 
 $(document).ready(function() {
 
-	$('#overlay, #assign, #feedback, #checkin-options').hide();
-
+	$('#overlay, #assign, #feedback, #checkin-options, #body section:not(:first-child)').hide();
+	
 	updateStats();
 
 	$(this).keyup(function(event) {
