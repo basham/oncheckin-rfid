@@ -108,11 +108,14 @@ function updateStats() {
 		$('#missing .value').text(missing.length);
 		var miss = $('#missing ul').empty();
 		for( var i = 0; i < missing.length; i++ )
-			miss.append('<li>' + missing[i].hashname + '</li>');
+			miss.append( $('<li>' + missing[i].hashname + '</li>').data('hasher', missing[i]) );
 	}
 	else
 		$('#missing').hide();
 
+	$('#missing li').click(function() {
+		checkinHasher( $(this).data('hasher') );
+	});
 
 	$('#down-downs li').click(function() {
 		$(this).toggleClass('selected').siblings().removeClass('selected');
@@ -341,6 +344,7 @@ $(document).ready(function() {
 		updateStats();
 	});
 	*/
+	
 });
 
 
@@ -415,6 +419,7 @@ function Hash(options) {
 	
 	this.checkIn = function(hasher) {
 		if( this.currentCheckIn().checkIn(hasher) ) {
+			this.save();
 			for( var i = 0; i < this.attendees.length; i++ )
 				if( this.attendees[i] == hasher.id ) // The hasher has checked in at least once at this hash
 					return true;
@@ -424,6 +429,7 @@ function Hash(options) {
 				feedback('You\'re signing in late, ' + hasher.hashname + '.');
 				this.lateCheckIns.push( hasher );
 			}
+			//console.log("WHAT?");
 			this.save();
 			return true;
 		}
