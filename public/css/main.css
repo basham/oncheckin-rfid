@@ -6,6 +6,7 @@ html {
 
 body {
 	overflow-x: hidden;
+	overflow-y: scroll;
 	font-family: 'Helvetica Neue', Helvetica, sans-serif;
 	height: 100%;
 	text-shadow: #FFFFFF 0 1px 0;
@@ -228,7 +229,9 @@ nav {
 	border-radius: 0 0 0 10px;
 	-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, .25); }
 	
-
+.menu li, #checkin-label, #new-checkin {
+	cursor: pointer; }
+	
 #menu {
 	width: 100%;
 	z-index: 200;

@@ -145,7 +145,7 @@ function updateDownDowns() {
 	$('#anniversaries ul, #namings ul, #latecheckins ul, #returners ul, #virgins ul').empty();
 
 	for( i = 0; i < a.length; i++ )
-		$('#anniversaries ul').prepend( '<li>' + a[i].hashname + ' &bull; <mark>' + a[i].hashes + '</mark></li>' );
+		$('#anniversaries ul').prepend( '<li><mark>' + a[i].hashes + '</mark> &bull; ' + a[i].hashname + '</li>' );
 		
 	for( i = 0; i < n.length; i++ )
 		$('#namings ul').prepend( listHasher(n[i]) );
@@ -154,7 +154,7 @@ function updateDownDowns() {
 		$('#latecheckins ul').prepend( listHasher(l[i]) );
 
 	for( i = 0; i < r.length; i++ )
-		$('#returners ul').prepend( '<li>' + r[i].hashname + ' &bull; <mark>' + r[i].lasthash + '</mark></li>' );
+		$('#returners ul').prepend( '<li><mark>' + r[i].lasthash + '</mark> &bull; ' + r[i].hashname + '</li>' );
 		
 	for( i = 0; i < v.length; i++ )
 		$('#virgins ul').prepend( listHasher(v[i]) );
