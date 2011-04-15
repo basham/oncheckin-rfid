@@ -474,6 +474,13 @@ function Hash(options) {
 		for( var i = 0; i < this.hashers.length; i++ )
 			if( this.hashers[i].isAnniversary() )
 				a.push( this.hashers[i] );
+		a.sort(function(b, c) {
+			if( b.hashes > c.hashes )
+				return 1;
+			if ( b.hashes == c.hashes )
+				return 0;
+			return -1;
+		});
 		return a;
 	};
 
@@ -494,6 +501,15 @@ function Hash(options) {
 		for( var i = 0; i < this.hashers.length; i++ )
 			if( this.hashers[i].isReturner() )
 				a.push( this.hashers[i] );
+		a.sort(function(b, c) {
+			bd = new Date(b.lasthash);
+			cd = new Date(c.lasthash);
+			if( bd > cd )
+				return 1;
+			if ( bd == cd )
+				return 0;
+			return -1;
+		});
 		return a;
 	};
 	
