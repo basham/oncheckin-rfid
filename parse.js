@@ -13,7 +13,7 @@ var longestname = '';
 var nameavg = 0;
 var named = 0;
 
-var reader = csv.createCsvFileReader('data/roster-20110402.csv');
+var reader = csv.createCsvFileReader('data/20110416/roster-20110416.csv');
 reader.setColumnNames([ 'initials','name','hashname','address','phone','hashes','lasthash','hares' ]);
 
 reader
@@ -51,7 +51,7 @@ reader
 	sys.puts('NAME LENGTH AVG: ' + ( nameavg / named ));
 	//sys.puts(JSON.stringify(rfids));
 	saveRoster();
-	saveRFIDs();
+	//saveRFIDs();
 });
 
 /*

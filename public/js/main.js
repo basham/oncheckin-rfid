@@ -348,7 +348,7 @@ $(document).ready(function() {
 });
 
 
-var latesthash = '2/19/11';
+var latesthash = '4/2/11';
 
 function Hasher(options) {
 	options = options || {};
@@ -367,7 +367,7 @@ function Hasher(options) {
 		return this.hashes > 5 && this.hashname == ('Just ' + this.firstname);
 	};
 	this.isReturner = function() {
-		return this.lasthash < latesthash;
+		return new Date(this.lasthash) < new Date(latesthash);
 	}
 	this.isVirgin = function() {
 		return this.hashes <= 1;
@@ -389,7 +389,7 @@ var hash = new Hash();
 //var hash;
 function Hash(options) {
 	options = options || {};
-	this.title = options.title || 'Hashi Gras Hash';
+	this.title = options.title || 'Red Dress Hash';
 	this.attendees = options.attendees || [];
 	this.hashers = toHashers(options.hashers); // Temporary storage of hasher data
 	this.checkIns = toCheckIns(options.checkIns);
