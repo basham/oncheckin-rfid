@@ -61,7 +61,7 @@ body {
 	z-index: 1500; }
 
 .module {
-	position: absolute;
+	position: fixed;
 	width: 400px;
 	margin: 0 auto;
 	z-index: 2000;
@@ -187,7 +187,7 @@ form p {
 
 
 #feedback {
-	position: absolute;
+	position: fixed;
 	bottom: 0;
 	max-width: 600px;
 	z-index: 3000;
