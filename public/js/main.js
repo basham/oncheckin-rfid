@@ -29,6 +29,18 @@ socket.connect()
 				feedback('Assigned tag to new hasher, ' + h.hashname + '.');
 				closeModal();
 				break;
+			case 'signinRegistered': // Manually sign-in hasher already in database
+				var h = new Hasher( obj.data );
+				checkinHasher(h);
+				//feedback('Signed-in hasher, ' + h.hashname + '.');
+				//closeModal();
+				break;
+			case 'manualRegister': // Manually sign-in and register hasher
+				var h = new Hasher( obj.data );
+				checkinHasher(h);
+				//feedback('Registered and signed-in new hasher, ' + h.hashname + '.');
+				//closeModal();
+				break;
 		}
 	}
 })
@@ -190,8 +202,15 @@ function serializeHasher() {
 
 function openAssignModal(rfid) {
 	$('#rfid').text(rfid);
+	$('#modal-title').text('Assign tag');
 	if( $('#assign').is(':visible') ) // New tag was scanned when modal was already open
 		feedback('Assigning new tag: ' + rfid);
+	$('#overlay:hidden').show('fade', {}, 250);
+	$('#assign:hidden').center().show('slide', { direction:'up' }, 250);
+}
+
+function openManualAssignModal() {
+	$('#modal-title').text('Sign-in');
 	$('#overlay:hidden').show('fade', {}, 250);
 	$('#assign:hidden').center().show('slide', { direction:'up' }, 250);
 }
@@ -216,6 +235,10 @@ function autoAssign() {
 	if( $('#assign').is(':hidden') ) // Only assign if the modal is active
 		return;
 	var rfid = $('#rfid').text();
+	if( rfid == '' ) {
+		autoSignin();
+		return;
+	}
 	if( $('.auto .selected').length )
 		socket.send({ action: 'assignRegistered', data: { id: $('.auto .selected').attr('id'), rfid: rfid } });
 	else {
@@ -225,6 +248,19 @@ function autoAssign() {
 			return;
 		}
 		socket.send({ action: 'register', data: { hasher: s, rfid: rfid } });
+	}
+}
+
+function autoSignin() {
+	if( $('.auto .selected').length )
+		socket.send({ action: 'signinRegistered', data: { id: $('.auto .selected').attr('id') } });
+	else {
+		var s = serializeHasher();
+		if( s.firstname == '' || s.lastname == '' ) {
+			feedback('The full mother-given name must be supplied.');
+			return;
+		}
+		socket.send({ action: 'manualRegister', data: { hasher: s } });
 	}
 }
 
@@ -246,6 +282,7 @@ $(document).ready(function() {
 	updateStats();
 
 	$(this).keyup(function(event) {
+		console.log(event.keyCode);
 		switch( event.keyCode ) {
 			case 38: // Up arrow
 				$('form input').blur().addClass('disabled');
@@ -278,7 +315,10 @@ $(document).ready(function() {
 				//	openAssignModal();
 				break;
 			case 27: // Escape
-				closeModal();
+				//closeModal();
+				break;
+			case 112: // F1
+				openManualAssignModal();
 				break;
 		}
 	});
@@ -348,7 +388,7 @@ $(document).ready(function() {
 });
 
 
-var latesthash = '4/2/11';
+var latesthash = '4/16/11';
 
 function Hasher(options) {
 	options = options || {};

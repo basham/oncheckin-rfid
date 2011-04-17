@@ -204,12 +204,23 @@ function assignRegistered(id, rfid) {
 	return getHasherById( id );
 }
 
+function signinRegistered(id) {
+	return getHasherById( id );
+}
+
 function register(hasher, rfid) {
 	var h = new Hasher( hasher );
 	hashers.push( h );
 	rfids[rfid] = h.id;
 	saveRoster();
 	saveRFIDs();
+	return h;
+}
+
+function manualRegister(hasher) {
+	var h = new Hasher( hasher );
+	hashers.push( h );
+	saveRoster();
 	return h;
 }
 
@@ -292,6 +303,12 @@ socket.on('connection', function(client){
 				break;
 			case 'register':
 				socket.broadcast({ action: 'register', data: register(message.data.hasher, message.data.rfid) });
+				break;
+			case 'signinRegistered':
+				socket.broadcast({ action: 'signinRegistered', data: signinRegistered(message.data.id) });
+				break;
+			case 'manualRegister':
+				socket.broadcast({ action: 'manualRegister', data: manualRegister(message.data.hasher) });
 				break;
 			case 'saveHash':
 				saveHash(message.data);
