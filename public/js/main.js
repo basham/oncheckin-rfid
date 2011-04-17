@@ -429,7 +429,7 @@ var hash = new Hash();
 //var hash;
 function Hash(options) {
 	options = options || {};
-	this.title = options.title || 'Red Dress Hash';
+	this.title = options.title || 'Hash of Shame';
 	this.attendees = options.attendees || [];
 	this.hashers = toHashers(options.hashers); // Temporary storage of hasher data
 	this.checkIns = toCheckIns(options.checkIns);

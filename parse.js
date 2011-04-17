@@ -13,7 +13,7 @@ var longestname = '';
 var nameavg = 0;
 var named = 0;
 
-var reader = csv.createCsvFileReader('data/20110416/roster-20110416.csv');
+var reader = csv.createCsvFileReader('data/20110417/roster-20110417.csv');
 reader.setColumnNames([ 'initials','name','hashname','address','phone','hashes','lasthash','hares' ]);
 
 reader
