@@ -317,7 +317,7 @@ $(document).ready(function() {
 			case 27: // Escape
 				//closeModal();
 				break;
-			case 112: // F1
+			case 117: // F1
 				openManualAssignModal();
 				break;
 		}
