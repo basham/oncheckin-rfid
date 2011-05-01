@@ -1,0 +1,71 @@
+/*
+
+25% BLUE DARK
+
+rgba(25, 60, 112, 1)
+#193c70
+
+rgba(25, 60, 112, .8)
+#47638D
+
+rgba(25, 60, 112, .9)
+#304F7E
+
+--
+
+50% BLUE MEDIUM
+rgba(50, 120, 224, 1);
+#3278e0
+#4786e3 90%
+
+--
+
+75% BLUE LIGHT
+rgba(162, 185, 247, 1);
+#a2b9f7
+
+--
+
+10% BLACK
+#E6E6E6
+
+--
+
+80% BLACK
+#333333
+
+*/
+
+html { }
+
+body { }
+
+header section hgroup, article, article nav li.next, article aside,
+footer section, footer aside, .figure-group {
+	border-color: #E6E6E6;
+	border-color: rgba(0, 0, 0, .1); }
+
+abbr {
+	border-color: #333333;
+	border-color: rgba(0, 0, 0, .8); }
+	
+h1, h2, h3, dt, header a:link, header a:visited {
+	color: #333333;
+	color: rgba(0, 0, 0, .8); }
+
+header h1 a:hover {
+	color: #000000;
+	background-color: transparent; }
+
+a:link, a:visited {
+	color: #4786e3;
+	color: rgba(50, 120, 224, .9); }
+
+a:hover, header a:hover {
+	color: #304F7E;
+	color: rgba(25, 60, 112, .9); }
+
+a:hover {
+	background-color: #EBF2FC;
+	background-color: rgba(50, 120, 224, .1); }
+	
