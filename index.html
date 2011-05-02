@@ -29,7 +29,9 @@
 		});
 		
 		function embedVid() {
-			$('#countdown').fadeTo( 1000, 0 );
+			$('#countdown').fadeOut(1000, function() {
+				$('#embed').css('margin', 0);
+			});
 			$('#embed').animate({ opacity: 1 }, 2000, function() {
 				$('#embed').html(
 					'<object width="720" height="431" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000">' +
