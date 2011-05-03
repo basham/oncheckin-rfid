@@ -9,6 +9,8 @@ body {
 	font-family: 'Helvetica Neue', Helvetica, arial, sans-serif; }
 
 header {
+	position: relative;
+	z-index: 10;
 	background: #111111;
 	border-top: 80px solid #222222;
 	height: 40px;
@@ -28,11 +30,11 @@ header hgroup h1 {
 	position: relative;
 	z-index: 10;
 	width: 500px;
-	height: 130px;
+	height: 135px;
 	background: url(../i/logo.png) no-repeat; }
 
 header hgroup h2 {
-	margin: -25px 0 0;
+	margin: -30px 0 0;
 	font-size: 2.2em;
 	position: relative;
 	width: 580px;
@@ -41,10 +43,9 @@ header hgroup h2 {
 	display: block;
 	color: rgba(100%, 100%, 100%, .5);
 	background: #222222;
-	padding: 0 20px 10px;
+	padding: 5px 20px 10px;
 	font-weight: 300;
 	line-height: 1.4;
-	border-top: 5px solid #292929;
 	border-radius: 0 0 0 10px; }
 
 header, article {
@@ -52,11 +53,16 @@ header, article {
 	width: 760px;
 	margin: 0 auto; }
 
-header, section {
+header, section, header hgroup h2 {
 	-webkit-box-shadow: 0 10px 5px rgba(0, 0, 0, .25);
 	-moz-box-shadow: 0 10px 5px rgba(0, 0, 0, .25);
 	box-shadow: 0 10px 5px rgba(0, 0, 0, .25); }
 
+header, section, header hgroup h2 {
+	-webkit-box-shadow: 0 5px 2px rgba(0, 0, 0, .25);
+	-moz-box-shadow: 0 5px 2px rgba(0, 0, 0, .25);
+	box-shadow: 0 5px 2px rgba(0, 0, 0, .25); }
+	
 section {
 	position: relative;
 	margin: 0 10px;
@@ -95,9 +101,6 @@ a:hover {
 .hide {
 	display: none; }
 
-.sig {
-	padding-left: 250px; }
-
 strong {
 	font-weight: bold; }
 	
@@ -116,7 +119,9 @@ strong span {
 	z-index: 5;
 	padding: 0;
 	margin: 0;
-	border-width: 0; }
+	border-width: 0;
+	color: #FFFFFF;
+	text-shadow: #000000 0 2px 0; }
 
 #video div {
 	position: relative;
@@ -124,7 +129,7 @@ strong span {
 		
 #countdown {
 	z-index: 5;
-	padding: 30px 100px 30px; }
+	padding: 30px 110px 30px; }
 
 #timer {
 	line-height: 1.2;
@@ -134,8 +139,8 @@ strong span {
 #embed {
 	z-index: 1;
 	margin: -491px 0 0;
-	opacity: .1;
-	background: url(../i/ustream_offair.png) no-repeat; }
+	opacity: 1;
+	background: url(../i/demo.jpg) no-repeat; }
 
 
 
@@ -148,7 +153,6 @@ strong span {
 
 .countdown_row {
 	clear: both;
-	width: 100%;
 	padding: 0 2px;
 	text-align: center; }
 	
@@ -180,7 +184,10 @@ strong span {
 	text-align: center; }
 	
 .countdown_amount {
-	font-size: 250%; }
+	font-size: 250%;
+	padding: 10px 70px 70px;
+	border-radius: 200px;
+	background: rgba(0, 0, 0, .75); }
 	
 .countdown_descr {
 	display: block;
