@@ -315,7 +315,7 @@ $(document).ready(function() {
 				//	openAssignModal();
 				break;
 			case 27: // Escape
-				//closeModal();
+				closeModal();
 				break;
 			case 117: // F1
 				openManualAssignModal();
