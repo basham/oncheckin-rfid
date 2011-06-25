@@ -120,75 +120,51 @@ strong span {
 	padding: 0;
 	margin: 0;
 	border-width: 0;
-	color: #FFFFFF;
-	text-shadow: #000000 0 2px 0; }
+	line-height: 0; }
 
-#video div {
-	position: relative;
-	height: 431px; }
-		
-#countdown {
-	z-index: 5;
-	padding: 30px 110px 30px; }
+.left {
+	float: left; }
 
-#timer {
-	line-height: 1.2;
-	font-size: 500%;
-	padding-top: 30px; }
+.right {
+	float: right; }
 
-#embed {
-	z-index: 1;
-	margin: -491px 0 0;
-	opacity: 1;
-	background: url(../i/demo.jpg) no-repeat; }
+.clear {
+	clear: both; }
 
-
-
-/* jQuery Countdown styles 1.5.9. */
-.hasCountdown { }
-
-.countdown_rtl { }
-
-.countdown_holding span { }
-
-.countdown_row {
-	clear: both;
-	padding: 0 2px;
-	text-align: center; }
-	
-.countdown_show1 .countdown_section {
-	width: 98%; }
-	
-.countdown_show2 .countdown_section {
-	width: 48%; }
-	
-.countdown_show3 .countdown_section {
-	width: 32.5%; }
-	
-.countdown_show4 .countdown_section {
-	width: 24.5%; }
-	
-.countdown_show5 .countdown_section {
-	width: 19.5%; }
-	
-.countdown_show6 .countdown_section {
-	width: 16.25%; }
-	
-.countdown_show7 .countdown_section {
-	width: 14%; }
-	
-.countdown_section {
+.play {
+	margin-top: 10px;
+	padding-right: 15px;
 	display: block;
-	float: left;
-	font-size: 75%;
-	text-align: center; }
-	
-.countdown_amount {
-	font-size: 250%;
-	padding: 10px 70px 70px;
-	border-radius: 200px;
-	background: rgba(0, 0, 0, .75); }
-	
-.countdown_descr {
-	display: block;
-	width: 100%; }
+	float: left; }
+
+.play span {
+	padding: 7px 28px;
+	margin-right: 15px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	background: #CCCCCC url(../i/play.png) no-repeat center center; }
+
+.play:hover span {
+	background-color: #AAAAAA; }
+
+.button {
+	float: right;
+	padding: .5em 1em;
+	background-color: rgba(0, 0, 0, .1);
+	border: 1px solid #CCCCCC;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	text-shadow: rgba(0, 0, 0, .1) 0 -1px 0;
+	background: -webkit-gradient(linear, 0 0, 0 100%, from(#FFFFFF), to(#E5E5E5));
+	background: -moz-linear-gradient(top, #FFFFFF, #E5E5E5); }
+
+.button:hover {
+	border-color: #AAAAAA;
+	background: -webkit-gradient(linear, 0 0, 0 100%, from(#FFFFFF), to(#EEEEEE));
+	background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE); }
+
+.button:active {
+	background: -webkit-gradient(linear, 0 0, 0 100%, from(#EEEEEE), to(#FFFFFF));
+	background: -moz-linear-gradient(top, #EEEEEE, #FFFFFF); }
